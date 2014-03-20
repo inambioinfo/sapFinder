@@ -1,0 +1,278 @@
+%\VignetteIndexEntry{sapFinder Vignette}
+%\VignetteDepends{sapFinder}
+%\VignetteEngine{utils::Sweave}
+%\VignetteKeywords{Mass Spectrometry (MS), SAP, bioinformatics}
+%\VignettePackage{sapFinder}
+\documentclass[12pt]{article}
+
+<<style, echo=FALSE, results=tex>>=
+BiocStyle::latex(use.unsrturl=FALSE)
+@
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[numbers]{natbib}
+\usepackage{graphicx}
+\usepackage[section]{placeins}
+\bibliographystyle{plainnat}
+
+\author{Bo Wen, Shaohang Xu}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\title{sapFinder User Guide}
+
+\maketitle
+
+\tableofcontents
+
+%------------------------------------------------------------------
+\section{Introduction}
+%------------------------------------------------------------------
+
+This vignette describes the functionality implemented in the 
+\Rpackage{sapFinder} package. 
+\Rpackage{sapFinder} is developed to
+
+\begin{enumerate}
+\item annotate variation-associated database construction from public 
+    single nucleotide variations (SNVs) database or sample-specific 
+    genome-wide association studies (GWAS) and RNA-Seq data;
+\item database searching;
+\item post-processing;
+\item HTML-based report generation.
+\end{enumerate}
+
+%------------------------------------------------------------------
+\section{Variation-associated database construction}
+%------------------------------------------------------------------
+
+Currently, two kind of variation-associated databases can be constructed by 
+using \Rpackage{sapFinder} package. One is the sample-specific 
+variation-associated database and the other is the aggregate database that 
+is created from the public SNV repositories, such as dbSNP \citep{dbsnp} and 
+COSMIC \citep{cosmic}. 
+
+%------------------------------------------------------------------
+\section{Based on sample-specific SNV data}
+%------------------------------------------------------------------
+
+\subsection{Input data}
+\subsubsection{Input data}
+
+To construct sample-specific variation-associated database by using 
+\Rpackage{sapFinder}, three files are required as input. One is a Variant 
+Call Format (VCF) file which can be generated from a BAM file using single 
+nucleotide polymorphism calling tools such as SAMtools \citep{samtool} and 
+The Genome Analysis Toolkit (GATK) \citep{gatk}. The other two files are a 
+gene annotation file and a FASTA format mRNA sequences file which can be 
+downloaded by users from the University of California, Santa Cruz (UCSC) 
+table browser. For non-model organisms, users can manually provide these 
+files in the format of NCBI or ENSEMBL.
+
+\subsubsection{Preparing annotation files from UCSC table brower}
+
+To map variation information to the protein level, numerous pieces of 
+genome annotation information are needed, such as exon region boundary, 
+CDS region boundary, mRNA sequence et al. It is possible to manually download 
+these data from The Table Browser of UCSC 
+(\url{http://genome.ucsc.edu/cgi-bin/hgTables?command=start}). 
+
+Currently,before the construction of variation-associated database,it 
+requires users to download a tab-separated positional table annotation 
+file and a corresponding mRNA sequence FASTA file from UCSC table brower.
+Since Refseq updates from time to time, we suggest generating those files 
+the same day as running.
+
+The bullet list below summarizes the steps to download RefSeq genes annotation 
+file and mRNA Sequence file.
+
+\begin{itemize}
+\item Go to UCSC Table browser
+\item Choose genome (e.g. "Human")
+\item Choose assembly (e.g. "2009 GRCh37/hg19")
+\item Choose group (e.g. "Genes and Gene Predictions")
+\item Choose track (e.g. "RefSeq Genes")
+\item Choose table (e.g. "refGene")
+\item Choose region (e.g. "genome")
+\item Choose output format "all fields from selected table" 
+    (retrieves annotation file)
+\begin{itemize}
+\item Enter output filename(e.g. \verb|"hg19_refGene.txt"|)
+\item Press "get output" button
+\end{itemize}
+\item Choose output format "sequence" (retrieves mRNA file)
+\begin{itemize}
+\item Enter output filename(e.g. \verb|"hg19_refGeneMrna.fa"|)
+\item Press "get output" button
+\item Select "mRNA" sequence type,and press "submit" button
+\end{itemize}
+\end{itemize}
+
+The bullet list below summarizes the steps to download Ensembl genes 
+annotation file and mRNA Sequence file.
+
+\begin{itemize}
+\item Go to UCSC Table browser
+\item Choose genome (e.g. "Human")
+\item Choose assembly (e.g. "2009 GRCh37/hg19")
+\item Choose group (e.g. "Genes and Gene Predictions")
+\item Choose track (e.g. "Ensembl Genes")
+\item Choose table (e.g. "ensGene")
+\item Choose region (e.g. "genome")
+\item Choose output format "all fields from selected table" 
+    (retrieves annotation file)
+\begin{itemize}
+\item Enter output filename(e.g. \verb|"hg19_ensGene.txt"|)
+\item Press "get output" button
+\end{itemize}
+\item Choose output format "sequence" (retrieves mRNA file)
+\begin{itemize}
+\item Enter output filename(e.g. \verb|"hg19_ensGeneMrna.fa"|)
+\item Press "get output" button
+\item Select "genomic" sequence type,and press "submit" button
+\item In Sequence Retrieval Region Options.Select three 
+    checkboxes("5'UTR Exons","CDS Exons" and "3'UTR Exons") and select 
+    one radiobutton("One FASTA record per gene.")
+\item In Sequence Formatting Options.Select "Exons in upper case, 
+    everything else in lower case." button
+\item Press "get sequence" button
+\end{itemize}
+\end{itemize}
+
+Users only need to choose one type of above annotation files 
+(Refseq or Ensembl) to download.
+
+\subsubsection{Example code}
+
+For our example, we take part of the data from a recently 
+publised study \citep{gloria2014}. 
+
+<<createdb, echo=TRUE, cache=FALSE, tidy=FALSE>>=
+library(sapFinder)
+vcf <- system.file("extdata/sapFinder_test.vcf",
+                    package="sapFinder")
+annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
+                    package="sapFinder")
+refseq <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
+                    package="sapFinder")
+outdir <- "db_dir"
+prefix <- "sapFinder_test"
+db.files <- dbCreator(vcf=vcf, annotation=annotation,
+                    refseq=refseq, outdir=outdir,prefix=prefix)
+@
+
+Two files are outputed. One is a variation-associated database file which 
+is written in FASTA format to the directory specified and contains the 
+mutated peptides, the normal protein sequences and their reverse versions. 
+The other is a tab-delimited file which contains the variant peptides 
+information. Both files will be used in the following steps.
+
+\subsection{Based on public SNV database}
+
+The usage of creating variation-associated database from public SNV 
+repositories is the same with that based on sample-specific SNV data. 
+Currently, \Rpackage{sapFinder} can be used to create variation-associated 
+database based on the data from dbSNP \citep{dbsnp} and COSMIC \citep{cosmic}. 
+The required VCF files can be downloaded from their ftp sites.
+
+%------------------------------------------------------------------
+\section{MS/MS data searching}
+%------------------------------------------------------------------
+
+After the variation-associated database construction, \Biocpkg{rTANDEM} 
+package \citep{rTANDEM} is adopted to search the database against tandem 
+mass spectra to detect variant peptides. \Biocpkg{rTANDEM} package interfaces 
+the popular used open source search engine \software{X!Tandem} \citep{tandem} 
+algorithm in R.
+
+<<databasesearching, echo=TRUE, cache=FALSE, tidy=FALSE>>=
+outdir<-"."
+mgf.path <- system.file("extdata/sapFinder_test.mgf",
+                    package="sapFinder")
+protein.db <- db.files[1]
+xml.path <- runTandem(spectra=mgf.path, fasta=protein.db, 
+                    outdir = outdir,tol=10, tolu="ppm", 
+                    itol=0.1, itolu="Daltons")
+@
+
+The results are written in xml format to the directory specified and will 
+be loaded for further processing.
+
+%------------------------------------------------------------------
+\section{Post-processing}
+%------------------------------------------------------------------
+
+After the MS/MS data searching, the function \Rfunction{tanparser} can be 
+used to parse the search result. It calculates the q-value for each peptide 
+spectrum matches (PSMs) and then utilizes the Occam's razor approach 
+\citep{Nesvizhskii2003} to deal with degenerate wild peptides by finding a 
+minimum subset of proteins that covered all of the identified wild peptides. 
+<<parserGear, echo=TRUE, cache=FALSE, tidy=FALSE>>=
+parserGear(file=xml.path, db=db.files[1],
+            outdir='parser_outdir', prefix=prefix,alignment=1)
+@
+
+It exports some tab-delimited files containing the peptide identification 
+result and protein identification result. And the annotated spectra for 
+the identified variant peptides which pass the threshold are exported.
+
+%------------------------------------------------------------------
+\section{HTML-based report generation}
+%------------------------------------------------------------------
+
+The results are then summarised and compiled into an interactive html report.
+
+<<reportg, echo=TRUE, cache=FALSE, tidy=FALSE>>=
+reportCreator(indir="parser_outdir", 
+                db= db.files[1], varInfor=db.files[2],prefix=prefix)
+@
+After the analysis has completed, the file \file{index.html} in the output 
+directory can be opened
+in a web browser to access report generated.
+
+%------------------------------------------------------------------
+\section{Integrated function \Rfunction{easyRun}}
+%------------------------------------------------------------------
+
+The function \Rfunction{easyRun} automates the data analysis process. 
+It will process the dataset in the following way:
+
+\begin{enumerate}
+\item Variation-associated database construction
+\item MS/MS searching
+\item Post-processing
+\item HTML-based report generation
+\end{enumerate}
+
+This function can be called as follows:
+<<auto, echo=TRUE, cache=FALSE, tidy=FALSE>>=
+vcf        <- system.file("extdata/sapFinder_test.vcf",
+                        package="sapFinder")
+annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
+                        package="sapFinder")
+refseq     <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
+                        package="sapFinder")
+mgf.path   <- system.file("extdata/sapFinder_test.mgf",
+                        package="sapFinder")
+easyRun(vcf=vcf,annotation=annotation,refseq=refseq,
+        outdir="test",prefix="sapFinder_test",
+        spectra=mgf.path, cpu=0,tol=10, tolu="ppm", 
+        itol=0.1, itolu="Daltons", alignment=1)
+@
+After the analysis has completed, the file \file{index.html} in the 
+output directory can be opened
+in a web browser to access report generated.
+
+%------------------------------------------------------------------
+\section{Session Info}
+%------------------------------------------------------------------
+
+Here is the output of \Rfunction{sessionInfo} on the system on which 
+this document waw compiled:
+<<sessionInfo, results=tex, print=TRUE>>=
+toLatex(sessionInfo())
+@
+
+\bibliography{sapFinder}
+
+\end{document}

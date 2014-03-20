@@ -1,0 +1,22 @@
+CHANGES IN VERSION 0.99.3
+-------------------------
+NEW FEATURES
+	*Add some BiocViews items to packags
+	*Reduce the size of testing data.
+	*Make import and export much more continent.
+	*To make package consistent with bioconductor in the coding style.
+	*Use BiocStyle for vignette.
+
+BUG FIXES
+    *To fix a bug of vignette document that may cause the package checking to crash.
+
+CHANGES IN VERSION 0.99.2
+-------------------------
+
+BUG FIXES
+    *Resolve some errors and warnings.
+
+CHANGES IN VERSION 0.99.0
+-------------------------
+
+    *Package released.
