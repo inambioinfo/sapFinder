@@ -70,16 +70,20 @@ $(function(){
 function cnt_hg_adj(){
 	var win_wid=$(window).width();
 	var win_hg=$(window).height();
-	if($(".seq_contentl").css("display")=="block"){
-		seq_cn_wid=win_wid - 257 + "px";
-	}else{
-		seq_cn_wid=win_wid - 10 + "px";	
-	}
-	if($(".header").css("display")=="block"){
-		seq_cn_hg=win_hg - 143 + "px";		
-	}else{
-		seq_cn_hg=win_hg - 67 + "px";	
-	}
+	/*
+	 * BUG FIX: index页面加载时变形
+	 *由于index.css中.seq_contentl和.header的默认的display属性都是block而非hidden的。因此没必要添加下面的这段判定。如果添加了，在当前css设置下，依然可能引起运行else里面的语句而非if括弧里的。（原因暂不明，可能是'$(".seq_contentl").css("display")'这句在载入时本身就不正常。）。试想一个left sidebar开启display，但是减的宽度只是10而非257。整个页面加载后就有可能变形。因此，最简单的办法就是删除本来就不需要的判定，强制以display="block"进行展示。
+	 */
+	//if($(".seq_contentl").css("display")=="block"){ 
+	seq_cn_wid=win_wid - 257 + "px";
+	//}else{
+	//	seq_cn_wid=win_wid - 10 + "px";	
+	//}
+	//if($(".header").css("display")=="block"){
+	seq_cn_hg=win_hg - 143 + "px";		
+	//}else{
+	//	seq_cn_hg=win_hg - 67 + "px";	
+	//}
 	$(".seq_cn").css({"width":seq_cn_wid,"height":seq_cn_hg});
 	$(".seq_contentl").css({"height":seq_cn_hg});
 }

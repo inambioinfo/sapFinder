@@ -31,10 +31,10 @@ BiocStyle::latex(use.unsrturl=FALSE)
 
 This vignette describes the functionality implemented in the 
 \Rpackage{sapFinder} package. 
-\Rpackage{sapFinder} is developed to
+\Rpackage{sapFinder} is developed to automate
 
 \begin{enumerate}
-\item annotate variation-associated database construction from public 
+\item variation-associated database construction from public 
     single nucleotide variations (SNVs) database or sample-specific 
     genome-wide association studies (GWAS) and RNA-Seq data;
 \item database searching;
@@ -268,7 +268,7 @@ in a web browser to access report generated.
 %------------------------------------------------------------------
 
 Here is the output of \Rfunction{sessionInfo} on the system on which 
-this document waw compiled:
+this document was compiled:
 <<sessionInfo, results=tex, print=TRUE>>=
 toLatex(sessionInfo())
 @
