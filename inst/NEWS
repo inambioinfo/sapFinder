@@ -1,7 +1,13 @@
+CHANGES IN VERSION 0.99.4
+-------------------------
+BUG FIXES
+    *To fix a bug of "index.js" that may cause a confusing CSS layout of index html page.
+
+
 CHANGES IN VERSION 0.99.3
 -------------------------
 NEW FEATURES
-	*Add some BiocViews items to packags
+	*Add some BiocViews items to packages.
 	*Reduce the size of testing data.
 	*Make import and export much more continent.
 	*To make package consistent with bioconductor in the coding style.
