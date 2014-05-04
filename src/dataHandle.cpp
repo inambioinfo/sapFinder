@@ -5,7 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <iomanip> //设置精度时使用
-#include <tr1/unordered_map>
+//#include <tr1/unordered_map>
 
 //R Stuff
 extern "C" 
@@ -76,15 +76,15 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 	std::string map_table = as<std::string> (map_table_);
 	std::string fasta = as<std::string> (fasta_);
 
-	typedef std::tr1::unordered_map<std::string, std::string> hash_fasta;
-	typedef std::tr1::unordered_map<std::string, std::string> hash_map;
-	typedef std::tr1::unordered_map<std::string, std::string> hash_mutPro; //只保留突变蛋白的id。
-	typedef std::tr1::unordered_map<std::string, std::string> hash_section;
-	typedef std::tr1::unordered_map<std::string, std::string> hash_unique;
-	typedef std::tr1::unordered_map<std::string, std::string> hash_unMut;
-	typedef std::tr1::unordered_map<std::string, std::string> dict_gene;
-	typedef std::tr1::unordered_map<std::string, std::string> dict_chr;
-	typedef std::tr1::unordered_map<std::string, std::string> dict_ident;
+	typedef std::map<std::string, std::string> hash_fasta;
+	typedef std::map<std::string, std::string> hash_map;
+	typedef std::map<std::string, std::string> hash_mutPro; //只保留突变蛋白的id。
+	typedef std::map<std::string, std::string> hash_section;
+	typedef std::map<std::string, std::string> hash_unique;
+	typedef std::map<std::string, std::string> hash_unMut;
+	typedef std::map<std::string, std::string> dict_gene;
+	typedef std::map<std::string, std::string> dict_chr;
+	typedef std::map<std::string, std::string> dict_ident;
 
 	hash_fasta hashF; //Fasta字典
 	hash_map hashM; //Map表字典
@@ -502,8 +502,8 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 			std::vector<std::string> line;
 			split(it->second,"\n",&line);	//按换行符分隔的行,每行是一张隶属于该蛋白突变或正常肽段的谱图鉴定信息及map表信息。
 			std::vector<std::string>::iterator itl; //行迭代器
-			//typedef std::tr1::unordered_map<std::string, std::string> redundant; //肽段可能出现多次，只记录一次。
-			typedef std::tr1::unordered_map<std::string, std::string> imut_group; //鉴定到的包含突变位点的肽段分组用。
+			//typedef std::map<std::string, std::string> redundant; //肽段可能出现多次，只记录一次。
+			typedef std::map<std::string, std::string> imut_group; //鉴定到的包含突变位点的肽段分组用。
 			//redundant red;
 			imut_group img;
 			imut_group img_new;
@@ -556,8 +556,8 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 			infoList["ALLTABLE"]=allTableList;
 
 			/*=====同一位点双不同突变且同时被鉴定引起的bug修正开始=====*/	
-			typedef std::tr1::unordered_map<std::string, std::string> hash_double_mut_key; //计录蛋白同同一突变位点出现突变类型的数目。主要用于修正“同一突变位点同时”发生了两个突变，并且被“同时鉴定”到的问题。
-			typedef std::tr1::unordered_map<std::string, std::string> hash_double_mut_value; //计录蛋白同同一突变位点出现突变类型的数目。主要用于修正“同一突变位点同时”发生了两个突变，并且被“同时鉴定”到的问题。
+			typedef std::map<std::string, std::string> hash_double_mut_key; //计录蛋白同同一突变位点出现突变类型的数目。主要用于修正“同一突变位点同时”发生了两个突变，并且被“同时鉴定”到的问题。
+			typedef std::map<std::string, std::string> hash_double_mut_value; //计录蛋白同同一突变位点出现突变类型的数目。主要用于修正“同一突变位点同时”发生了两个突变，并且被“同时鉴定”到的问题。
 			hash_double_mut_key hashDMK; 
 			hash_double_mut_value hashDMV; 
 			for(imut_group::iterator iti=img.begin();iti != img.end();++iti) 
