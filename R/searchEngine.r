@@ -23,16 +23,18 @@
 #' @examples
 #' # Variation-associated database construction
 #' vcf        <- system.file("extdata/sapFinder_test.vcf",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
 #' annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
 #' refseq     <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
+#' xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+#'                         package="sapFinder")
 #' outdir     <- "db_dir"
 #' prefix     <- "sapFinder_test"
 #' db.files <- dbCreator(vcf=vcf, annotation=annotation,
-#'                     refseq=refseq, outdir=outdir,
-#'                     prefix=prefix)
+#'                 refseq=refseq, outdir=outdir,
+#'                 prefix=prefix,xref=xref)
 #' 
 #' # MS/MS searching
 #' mgf.path   <- system.file("extdata/sapFinder_test.mgf",

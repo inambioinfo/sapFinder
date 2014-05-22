@@ -12,6 +12,9 @@
 #' @param outdir Output directory. 
 #' @param prefix The prefix of output file.
 #' @param xmx The maximum Java heap size. The unit is "G".
+#' @param xref Optional external cross-reference file,generally it's downloaded 
+#' through BioMart.If this file is provided,the final html report will present
+#' some relevant protein id or description.
 #' @return A vector containing two file names. One is a FASTA format file
 #' contains the mutated peptides, the normal protein sequences and their
 #' reverse versions, and the other is a tab-delimited file contains detailed
@@ -24,17 +27,20 @@
 #'                         package="sapFinder")
 #' refseq     <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
 #'                         package="sapFinder")
+#' xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+#'                         package="sapFinder")
 #' outdir     <- "db_dir"
 #' prefix     <- "sapFinder_test"
 #' db.files <- dbCreator(vcf=vcf, annotation=annotation,
 #'                 refseq=refseq, outdir=outdir,
-#'                 prefix=prefix)
+#'                 prefix=prefix,xref=xref)
 dbCreator=function(vcf=NULL, annotation=NULL, refseq=NULL,
-                outdir="./", prefix="test",xmx=NULL)
+                outdir="./", prefix="test",xmx=NULL, xref="noxref")
 {
     dir.create(outdir,recursive=TRUE,showWarnings=FALSE)
     outdir <- normalizePath(outdir)
     outFileWithDir <- paste(outdir,"/",prefix,sep="")
+
     if(is.null(xmx))
     {
         ph<-paste("java","-jar",collapse=" ",sep=" ")
@@ -46,13 +52,15 @@ dbCreator=function(vcf=NULL, annotation=NULL, refseq=NULL,
     }
     run_savdbcreate<-paste(ph,
                             paste("\"",
-                                paste(system.file("savdbcreate.v1.0.jar",
+                                paste(system.file("savdbcreate.v1.2.jar",
                                     package="sapFinder"),sep="",collapse=""),
                                 "\"",sep=""), 
                             paste("\"",vcf,"\"",sep=""), 
                             paste("\"",annotation,"\"",sep=""), 
                             paste("\"",refseq,"\"",sep=""), 
-                            paste("\"",outFileWithDir,"\"",sep=""), 
+                            "1",  #tryspin 
+                            paste("\"",outFileWithDir,"\"",sep=""),
+                            paste("\"",xref,"\"",sep=""),
                             collapse=" ",sep=" ");
     runinfo  <- system(command=run_savdbcreate,intern=TRUE);
     outFiles <- c(paste(outFileWithDir,".ms2.fasta",sep=""),
@@ -84,16 +92,18 @@ dbCreator=function(vcf=NULL, annotation=NULL, refseq=NULL,
 #' @examples
 #' ## Step 1. Variation-associated database construction
 #' vcf        <- system.file("extdata/sapFinder_test.vcf",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
 #' annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
 #' refseq     <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
+#' xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+#'                         package="sapFinder")
 #' outdir     <- "db_dir"
 #' prefix     <- "sapFinder_test"
 #' db.files <- dbCreator(vcf=vcf, annotation=annotation,
-#'                     refseq=refseq, outdir=outdir,
-#'                     prefix=prefix)
+#'                 refseq=refseq, outdir=outdir,
+#'                 prefix=prefix,xref=xref)
 #' 
 #' ## Step 2. MS/MS searching
 #' mgf.path   <- system.file("extdata/sapFinder_test.mgf",
@@ -150,17 +160,20 @@ parserGear=function(file=NULL,db=NULL,outdir="parser_outdir",
 #' information and is from the output of the function \code{dbCreator}.
 #' @export 
 #' @examples
+#' ## Step 1. Variation-associated database construction
 #' vcf        <- system.file("extdata/sapFinder_test.vcf",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
 #' annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
 #' refseq     <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
-#'                             package="sapFinder")
+#'                         package="sapFinder")
+#' xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+#'                         package="sapFinder")
 #' outdir     <- "db_dir"
 #' prefix     <- "sapFinder_test"
 #' db.files <- dbCreator(vcf=vcf, annotation=annotation,
-#'                     refseq=refseq, outdir=outdir,
-#'                     prefix=prefix)
+#'                 refseq=refseq, outdir=outdir,
+#'                 prefix=prefix,xref=xref)
 #' 
 #' ## Step 2. MS/MS searching
 #' mgf.path   <- system.file("extdata/sapFinder_test.mgf",
@@ -217,19 +230,21 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
     cat("    Step 1: Reading the Info.\n");
     dobj<-.dataHandle_R(pep.summary.path, varInfor, db);
     gc()  # call garbage collection
-    #save(dobj,file=paste(.DATA.DIR, "/dataHandle.out.RData", sep = "")) #debug
+    #save(dobj,file=paste("test/report/dataHandle.out.RData", sep = "")) #debug
     if(length(dobj)==1){
         stop("None variant peptide is identified!\n");
     }
     cat("    Step 2: Spectrum plotting.\n");
-    .spplot(indir,outdir); #draw spectral
+    .spplot(dobj,indir,outdir); #draw spectral
     cat("    Step 3: Creating the html pages.\n");
     wmlist=list();
     .rihtml(0,outdir);
     .rihtml(1,outdir);
     .rihtml(2,outdir);
+    .rihtml(3,outdir);
     .rdhtml(varInfor,outdir);
     .rghtml(data=dobj,outdir=outdir);
+    .rhhtml(outdir);
     wmlist<-.rchtml(data=dobj,wmlist=wmlist,outdir=outdir);
     .rshtml(data=dobj, pep.summary.path=pep.summary.path, 
             pro.summary.path=pro.summary.path,
@@ -267,6 +282,9 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
 #' @param alignment 0 or 1 to determine if peptide should be alignment or not.
 #' Default is 0.
 #' @param xmx The maximum Java heap size. The unit is "G".
+#' @param xref Optional external cross-reference file,generally it's downloaded 
+#' through BioMart.If this file is provided,the final html report will present
+#' some relevant protein id or description.
 #' @param ... Additional arguments
 #' @export
 #' @examples
@@ -278,20 +296,22 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
 #'                             package="sapFinder")
 #' mgf.path   <- system.file("extdata/sapFinder_test.mgf",
 #'                             package="sapFinder")
+#' xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+#'                         package="sapFinder")
 #' easyRun(vcf=vcf,annotation=annotation,refseq=refseq,outdir="test",
 #' prefix="sapFinder_test",spectra=mgf.path,cpu=0,tol=10, tolu="ppm", itol=0.1,
-#' itolu="Daltons",alignment=1)
+#' itolu="Daltons",alignment=1,xref=xref)
 easyRun=function(vcf=NULL, annotation=NULL, refseq=NULL, outdir="./", 
                 prefix="sapFinder_test",spectra="",cpu=1, enzyme="[KR]|[X]",
                 tol=10,tolu="ppm",itol=0.6,itolu="Daltons",
                 varmod=NULL,fixmod=NULL,miss=2,maxCharge=8,ti=FALSE,
-                alignment=1, xmx=NULL, ...){
+                alignment=1, xref="noxref", xmx=NULL, ...){
     ## Stage 1. Variation-associated database construction
     dir.create(outdir,recursive=TRUE,showWarnings=FALSE)
     outdir=normalizePath(outdir)
     cat("Stage 1. Variation-associated database construction.\n")
     db.files   <- dbCreator(vcf, annotation, refseq, outdir=outdir,
-                            prefix=prefix, xmx=xmx)
+                            prefix=prefix, xmx=xmx, xref=xref)
     
     ## Stage 2. MS/MS searching
     cat("Stage 2. MS/MS searching.\n")

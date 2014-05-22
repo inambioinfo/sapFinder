@@ -82,8 +82,7 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 	typedef std::map<std::string, std::string> hash_section;
 	typedef std::map<std::string, std::string> hash_unique;
 	typedef std::map<std::string, std::string> hash_unMut;
-	typedef std::map<std::string, std::string> dict_gene;
-	typedef std::map<std::string, std::string> dict_chr;
+	typedef std::map<std::string, std::string> dict_map;
 	typedef std::map<std::string, std::string> dict_ident;
 
 	hash_fasta hashF; //Fasta字典
@@ -92,10 +91,14 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 	hash_mutPro hashMP; //含突变蛋白记录字典
 	hash_unMut hashUM; //记录蛋白上的所有突变位点（包含鉴定和未鉴定到的。）
 	hash_unique hashU; //一条query中可能比到多个ID，如果是正常肽段，其中的突变ID是会被map回到正常蛋白ID的，这样就造成一条记录在同一蛋白ID中出现了多次，因此需要去冗余。又由于允许一条query同时出现在不同的正常蛋白ID中，因此，此hashU的键应该为"pro_id+query号"。重复出现的不保存。
-	dict_gene dictG;
-	dict_chr dictC;
+	dict_map dictG;   //转录本id和基因名的map
+	dict_map dictC;   //转录本id和染色体的map
+	dict_map dictProt;   //转录本id和相应蛋白id的map,新增xref，不一定存在
+	dict_map dictSp;   //转录本id和swissprot id的map,新增xref，不一定存在
+	dict_map dictDesc;   //转录本id和description的map,新增xref，不一定存在
 	dict_ident dictIW; //用于记录蛋白中鉴定到的正常肽段位点区间
 	dict_ident dictIM; //用于记录蛋白中鉴定到的突变肽段位点区间
+	dict_ident dictIRS; //用于鉴定到的突变肽段中突变位点相对该肽段的相对坐标，主要是画谱图时使用。
 
 	/*读取map表*/
 	std::ifstream min(map_table.c_str());//相当于perl中的句柄,c_str()函数返回一个指向正规C字符串的指针, 内容与本std::string串相同,直接给fin传入std::string是ok的，但传std::string变量是会报错的，需要转化为指针.
@@ -107,6 +110,7 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 	std::string line;  //每行字符串临时变量
 	getline(min, line);//获取首行title
 	int rawid_k=-1,pro_k=-1,gene_k=-1,site_k=-1,start_k=-1,wild_k=-1,mut_k=-1,type_k=-1,db_k=-1,chr_k=-1,chr_site_k=-1,wna_k=-1,mna_k=-1;
+	int prot_k=-1,sp_k=-1,desc_k=-1;  //这三个为xref项，不是100%存在。
 	{	//作用域限定空间, 获取不同title的列号
 		std::vector<std::string> elem;
 		split(line,"\t",&elem);
@@ -129,16 +133,16 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 			{	
 				site_k=i;
 			}
-      else if(elem[i]=="Chr_coords")
+            else if(elem[i]=="Chr_coords")
 			{	
 				chr_site_k=i;
 			}
-      else if(elem[i]=="NA_wild")
-  		{	
+            else if(elem[i]=="NA_wild")
+  			{	
 				wna_k=i;
 			}	
-      else if(elem[i]=="NA_mut")
-  		{	
+    	    else if(elem[i]=="NA_mut")
+  			{	
 				mna_k=i;
 			}	
 			else if(elem[i]=="Start")
@@ -169,6 +173,19 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 			{	
 				chr_k=i;
 			}
+			else if(elem[i]=="ProtID")
+			{
+				prot_k=i;  //xref项，不是一定存在
+			}
+			else if(elem[i]=="SpID")
+			{
+				sp_k=i;  //xref项，不是一定存在
+			}
+			else if(elem[i]=="Desc")
+			{
+				desc_k=i;  //xref项，不是一定存在
+			}
+
 		}
 	}
 
@@ -305,7 +322,6 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 			{	
 				rt_i=i;
 			}
-
 		}
 	}
   
@@ -321,7 +337,7 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 		bool isSAP;
 		bool isDecoy;
 		split(elem[rawpro_i],";",&id_array);
-		split(elem[range_i],";",&range_array);
+		split(elem[range_i],";",&range_array);	//每张突变谱可能对应多个不同的变异id,相应的有可能会有多个不同的突变肽坐标区间。它们之间用;分隔。
 		if(elem[isDecoy_i]=="false")
 		{
 			isDecoy=false;
@@ -358,14 +374,31 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 						continue;//同一正常蛋白ID中只充许某一query号的记录出现一次。多余的需要过滤掉。避免重复输出
 					}
 					hashU[uniq_string]=1;
-					hashMP[map_array[pro_k]]=1;
+					hashMP[map_array[pro_k]]=1;	// 标记该蛋白是否存在突变位点。
 					dictG[map_array[pro_k]]=map_array[gene_k];
 					dictC[map_array[pro_k]]=map_array[chr_k];
 
+					if(prot_k>-1)  //这三项不是100%存在，因此需要判定索引是否误置-1。是-1则不保存。
+					{
+						dictProt[map_array[pro_k]]=map_array[prot_k];
+					}
+					if(sp_k>-1)
+					{
+						dictSp[map_array[pro_k]]=map_array[sp_k];
+					}
+					if(desc_k>-1)
+					{
+						dictDesc[map_array[pro_k]]=map_array[desc_k];
+					}
+
+
 					std::vector<std::string> se;//start和end位点
 					split(range_array[i],":",&se);//起止位点是以":"分割的,se[0]为start;se[1]里的为end。
-					int s=str2int(map_array[start_k])+str2int(se[0])-1;//突变肽段还原到蛋白序列上的起始位点坐标。
+					int s=str2int(map_array[start_k])+str2int(se[0])-1;//突变肽段还原到蛋白序列上的起始位点坐标。因为se的起止只是突变肽段在前后各两漏切的短肽上的相对坐标。
 					int e=str2int(map_array[start_k])+str2int(se[1])-1; //突变肽段还原到蛋白序列上的终止位点坐标。
+
+					int relative_mut_coords = str2int(map_array[site_k])-s+1;   //检测到的突变肽段中突变位点的相对坐标。主要用于画谱图时确定并标出哪些是包含变异的fragment.
+
 					if(dictIM.count(map_array[pro_k]))//将校正好的绝对坐标区间记录到dictIM字典中。由于同一肽段多张谱图的关系，会存在大量的重复，没有关系，到R中可以很方便的去除冗余。
 					{
 						dictIM[map_array[pro_k]]=dictIM[map_array[pro_k]]+";"+int2str(s)+":"+int2str(e);
@@ -378,11 +411,11 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 
 					if(hashS.count(map_array[pro_k]))
 					{
-						hashS[map_array[pro_k]]=hashS[map_array[pro_k]]+"\n"+elem[pep_i]+"\t"+"yes"+"\t"+map_array[site_k]+"\t"+map_array[wild_k]+"\t"+map_array[mut_k]+"\t"+map_array[type_k]+"\t"+map_array[db_k]+"\t"+map_array[chr_site_k]+"\t"+map_array[wna_k]+"->"+map_array[mna_k]+"\t"+elem[query_i]+"\t"+elem[charge_i]+"\t"+round4str(elem[mz_i])+"\t"+round4str(elem[delta_i])+"\t"+elem[isSAP_i]+"\t"+elem[miss_i]+"\t"+round2str(elem[rt_i])+"\t"+round4str(elem[evalue_i])+"\t"+round4str(elem[qvalue_i])+"\t"+elem[pep_i]+"\t"+elem[mod_i];
+						hashS[map_array[pro_k]]=hashS[map_array[pro_k]]+"\n"+elem[pep_i]+"\t"+"yes"+"\t"+map_array[site_k]+"\t"+map_array[wild_k]+"\t"+map_array[mut_k]+"\t"+map_array[type_k]+"\t"+map_array[db_k]+"\t"+map_array[chr_site_k]+"\t"+map_array[wna_k]+"->"+map_array[mna_k]+"\t"+elem[query_i]+"\t"+elem[charge_i]+"\t"+round4str(elem[mz_i])+"\t"+round4str(elem[delta_i])+"\t"+elem[isSAP_i]+"\t"+elem[miss_i]+"\t"+round2str(elem[rt_i])+"\t"+round4str(elem[evalue_i])+"\t"+round4str(elem[qvalue_i])+"\t"+elem[pep_i]+"\t"+elem[mod_i]+"\t"+int2str(relative_mut_coords);
 					}
 					else
 					{
-						hashS[map_array[pro_k]]=elem[pep_i]+"\t"+"yes"+"\t"+map_array[site_k]+"\t"+map_array[wild_k]+"\t"+map_array[mut_k]+"\t"+map_array[type_k]+"\t"+map_array[db_k]+"\t"+map_array[chr_site_k]+"\t"+map_array[wna_k]+"->"+map_array[mna_k]+"\t"+elem[query_i]+"\t"+elem[charge_i]+"\t"+round4str(elem[mz_i])+"\t"+round4str(elem[delta_i])+"\t"+elem[isSAP_i]+"\t"+elem[miss_i]+"\t"+round2str(elem[rt_i])+"\t"+round4str(elem[evalue_i])+"\t"+round4str(elem[qvalue_i])+"\t"+elem[pep_i]+"\t"+elem[mod_i];
+						hashS[map_array[pro_k]]=elem[pep_i]+"\t"+"yes"+"\t"+map_array[site_k]+"\t"+map_array[wild_k]+"\t"+map_array[mut_k]+"\t"+map_array[type_k]+"\t"+map_array[db_k]+"\t"+map_array[chr_site_k]+"\t"+map_array[wna_k]+"->"+map_array[mna_k]+"\t"+elem[query_i]+"\t"+elem[charge_i]+"\t"+round4str(elem[mz_i])+"\t"+round4str(elem[delta_i])+"\t"+elem[isSAP_i]+"\t"+elem[miss_i]+"\t"+round2str(elem[rt_i])+"\t"+round4str(elem[evalue_i])+"\t"+round4str(elem[qvalue_i])+"\t"+elem[pep_i]+"\t"+elem[mod_i]+"\t"+int2str(relative_mut_coords);	//仅突变的谱图才有index=20（即第21项）的relative_mut_coords。下面非突变的谱图只有20项。
 					}
 				}
 
@@ -426,8 +459,8 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 
 						std::vector<std::string> se;//start和end位点
 						split(range_array[i],":",&se);//起止位点是以":"分割的,se[0]为start;se[1]里的为end。
-						int s=str2int(map_array[start_k])+str2int(se[0])-1;//突变肽段还原到蛋白序列上的起始位点坐标。
-						int e=str2int(map_array[start_k])+str2int(se[1])-1; //突变肽段还原到蛋白序列上的终止位点坐标。
+						int s=str2int(map_array[start_k])+str2int(se[0])-1;//wild肽段还原到蛋白序列上的起始位点坐标。
+						int e=str2int(map_array[start_k])+str2int(se[1])-1; //wild肽段还原到蛋白序列上的终止位点坐标。
 						if(dictIW.count(map_array[pro_k]))
 						{
 							dictIW[map_array[pro_k]]=dictIW[map_array[pro_k]]+";"+int2str(s)+":"+int2str(e);
@@ -512,22 +545,34 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 			//fout<<it->second<<std::endl;//DEBUG
 			//fout<<std::endl;
 			Rcpp::List infoList("null");
-			infoList["PRO"]=it->first;
+			infoList["TRAN"]=it->first;
 			infoList["GENE"]=dictG[it->first];
 			infoList["CHR"]=dictC[it->first];
+			if(prot_k>-1)
+			{
+				infoList["PROT"]=dictProt[it->first];  //举个例子，PROT为ENSP号
+			}
+			if(sp_k>-1)
+			{
+				infoList["SP"]=dictSp[it->first];
+			}
+			if(desc_k>-1)
+			{
+				infoList["DESC"]=dictDesc[it->first];
+			}
 			infoList["SEQ"]=hashF[it->first];
 			infoList["RANGE_M"]=dictIM[it->first];
 			infoList["RANGE_W"]=dictIW[it->first];
 
 			//fout<<"=BEGIN"<<std::endl; //~output data object~//
-			//fout<<"@PRO\t"<<it->first<<std::endl; //~output data object~//
+			//fout<<"@TRAN\t"<<it->first<<std::endl; //~output data object~//
 			//fout<<"@GENE\t"<<dictG[it->first]<<std::endl; //~output data object~//
 			//fout<<"@CHR\t"<<dictC[it->first]<<std::endl; //~output data object~//
 			//fout<<"@SEQ\t"<<hashF[it->first]<<std::endl; //~output data object~//
 			//fout<<"@RAGNE\t"<<dictI[it->first]<<std::endl; //~output data object~//
 			//fout<<"@ALL_TABLE_START"<<std::endl; //~output data object~//
 
-			Rcpp::List allTableList("null");
+			Rcpp::List allTableList("null");  //用于保存每个突变蛋白的Peptide Summary report.即该蛋白的突变和未突变的所有谱图总和。
 			for (itl=line.begin(); itl!=line.end(); ++itl)
 			{
 				std::vector<std::string> elem;
@@ -539,11 +584,11 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 					std::string key=elem[2]+"\t"+elem[3]+"\t"+elem[4]+"\t"+elem[5]+"\t"+elem[6]+"\t"+elem[7]+"\t"+elem[8];
 					if(img.count(key))//以site,wildAA,mutAA,突变类型，突变ID,染色体突变座标，突变前后核苷酸对 作键。
 					{
-						img[key]=img[key]+"\n"+elem[9]+"\t"+elem[10]+"\t"+elem[11]+"\t"+elem[12]+"\t"+elem[13]+"\t"+elem[14]+"\t"+elem[15]+"\t"+elem[16]+"\t"+elem[17]+"\t"+elem[18]+"\t"+elem[19]+"\t"+elem[3]+"\t"+elem[4];
+						img[key]=img[key]+"\n"+elem[9]+"\t"+elem[10]+"\t"+elem[11]+"\t"+elem[12]+"\t"+elem[13]+"\t"+elem[14]+"\t"+elem[15]+"\t"+elem[16]+"\t"+elem[17]+"\t"+elem[18]+"\t"+elem[19]+"\t"+elem[3]+"\t"+elem[4]+"\t"+elem[20];
 					}
 					else
 					{
-						img[key]=elem[9]+"\t"+elem[10]+"\t"+elem[11]+"\t"+elem[12]+"\t"+elem[13]+"\t"+elem[14]+"\t"+elem[15]+"\t"+elem[16]+"\t"+elem[17]+"\t"+elem[18]+"\t"+elem[19]+"\t"+elem[3]+"\t"+elem[4];
+						img[key]=elem[9]+"\t"+elem[10]+"\t"+elem[11]+"\t"+elem[12]+"\t"+elem[13]+"\t"+elem[14]+"\t"+elem[15]+"\t"+elem[16]+"\t"+elem[17]+"\t"+elem[18]+"\t"+elem[19]+"\t"+elem[3]+"\t"+elem[4]+"\t"+elem[20];	//elem[20]即为relative_mut_coords。只有突变的谱图有。
 					}
 				}
 				//else if(elem[1] == "no")
@@ -585,7 +630,7 @@ RcppExport SEXP dataHandle_Cpp(SEXP rawdata_, SEXP map_table_, SEXP fasta_)
 					hashDMV[elem[0]]=iti->second;
 				}
 			}
-			/*========同一位点双不同突变且同时被鉴定引起的只bug修正结束=====*/
+			/*========同一位点双不同突变且同时被鉴定引起的bug修正结束=====*/
 
 			Rcpp::List iMutList("null");
 			for(imut_group::iterator iti=img_new.begin();iti != img_new.end();++iti) 

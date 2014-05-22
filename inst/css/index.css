@@ -517,3 +517,20 @@ a:active {color:#7c32a9;text-decoration:underline;}  /* 正在被点击的链接
 	background:#FFC;
 }
 
+/*下面两个属性应用于help page中*/
+div#plaincontent{
+    width: 800px;
+    margin: 0 0 0 250px;
+    padding: 20px 0 20px 0px;
+    border:0;
+    /*border-top: 1px solid #aaa;*/
+    border-bottom: 2px solid #aaa;
+    text-align: left;
+    font-size:17px;
+    font-family:"Times New Roman";
+}
+
+.ident {
+word-wrap:break-word;
+word-break:normal; 
+}

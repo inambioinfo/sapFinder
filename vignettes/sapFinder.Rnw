@@ -155,10 +155,13 @@ annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
                     package="sapFinder")
 refseq <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
                     package="sapFinder")
+xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+                    package="sapFinder")
 outdir <- "db_dir"
 prefix <- "sapFinder_test"
 db.files <- dbCreator(vcf=vcf, annotation=annotation,
-                    refseq=refseq, outdir=outdir,prefix=prefix)
+                    refseq=refseq, outdir=outdir,
+                    prefix=prefix,xref=xref)
 @
 
 Two files are outputed. One is a variation-associated database file which 
@@ -254,10 +257,12 @@ refseq     <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
                         package="sapFinder")
 mgf.path   <- system.file("extdata/sapFinder_test.mgf",
                         package="sapFinder")
+xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+                        package="sapFinder")
 easyRun(vcf=vcf,annotation=annotation,refseq=refseq,
         outdir="test",prefix="sapFinder_test",
-        spectra=mgf.path, cpu=0,tol=10, tolu="ppm", 
-        itol=0.1, itolu="Daltons", alignment=1)
+        spectra=mgf.path,cpu=0,tol=10, tolu="ppm", 
+        itol=0.1,itolu="Daltons",alignment=1,xref=xref)
 @
 After the analysis has completed, the file \file{index.html} in the 
 output directory can be opened

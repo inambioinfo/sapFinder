@@ -61,15 +61,15 @@
     .write(.tag("div"),.tag("table",class="stat"),file);
     .write(.tag("tbody"),file);
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Gene numbers :",.tag("/th"),file);
+    .write(.tag("th"),"Gene number :",.tag("/th"),file);
     .write(.tag("td"),stat_list[["gene_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Protein numbers :",.tag("/th"),file);
+    .write(.tag("th"),"Protein number :",.tag("/th"),file);
     .write(.tag("td"),stat_list[["pro_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("tr"),file);
-    .write(.tag("th"),"SAP numbers :",.tag("/th"),file);
+    .write(.tag("th"),"SAP number :",.tag("/th"),file);
     .write(.tag("td"),stat_list[["mut_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("/tbody"),file);
@@ -90,6 +90,7 @@
     
     .write(.tag("div",class="top_btn"),.tag("/div"),file); 
     #--------------.top_btn------------>
+    .write(.tag("/div"),file);
     .write(.tag("/body"),file);
 }
 

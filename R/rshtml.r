@@ -80,27 +80,30 @@
     .write(.tag("tbody"),file);
 
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Identified spectrum numbers :",.tag("/th"),file);
+    .write(.tag("th"),"Number of identified spectra :",.tag("/th"),file);
     .write(.tag("td"),stat_list[["all_sp_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Identified peptide numbers :",.tag("/th"),file);
+    .write(.tag("th"),"Number of identified peptide :",.tag("/th"),file);
     .write(.tag("td"),stat_list[["all_pep_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Identified protein numbers :",.tag("/th"),file);
+    .write(.tag("th"),"Number of identified protein :",.tag("/th"),file);
     .write(.tag("td"),stat_list[["all_pro_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Identified SAPs' spectrum numbers :",.tag("/th"),file);
+    .write(.tag("th"),"Number of identified spectra with SAP :",
+            .tag("/th"),file);
     .write(.tag("td"),stat_list[["mut_sp_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Identified SAPs' peptide numbers :",.tag("/th"),file);
+    .write(.tag("th"),"Number of identified peptide with SAP :",
+            .tag("/th"),file);
     .write(.tag("td"),stat_list[["mut_pep_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Identified SAPs' protein numbers :",.tag("/th"),file);
+    .write(.tag("th"),"Number of identified protein with SAP :",
+            .tag("/th"),file);
     .write(.tag("td"),stat_list[["mut_pro_num"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
 
@@ -162,7 +165,7 @@
     .write(.ctag("br"),file);
 
     .write(.tag("div",other='style="text-align:center"'),file);
-    .write(.tag("h2"),"SAP numbers distribution of each protein",
+    .write(.tag("h2"),"SAP number distribution of each protein",
         .tag("/h2"),file);
     .write(.ctag("img",other=paste('style="width:520px" src="../',.DATA.DIR,
         '/mut_num_each_protein_barplot.png"',sep="")),.ctag("br"),file);
@@ -205,7 +208,9 @@
             }
             if(length(data[[p]])==1)
             {
-                .writeTable(names(data[[p]][m]),
+				highlight_pep<-.mut_highlight(names(data[[p]][m]),
+                                data[[p]][[m]][["rel_coord"]]);
+                .writeTable(highlight_pep,
                             data[[p]][[m]][["AA_wild"]],
                             data[[p]][[m]][["AA_site"]],
                             data[[p]][[m]][["AA_mut"]],
@@ -220,9 +225,11 @@
             {
                 if(m==1)
                 {
+					highlight_pep<-.mut_highlight(names(data[[p]][m]),
+                                    data[[p]][[m]][["rel_coord"]]);
                     .write(.tag("tr",other=
                         .concat('style="background:',color,'"')),file);
-                    .write(.tag("td"),names(data[[p]][m]),.tag("/td"),file);
+                    .write(.tag("td"),highlight_pep,.tag("/td"),file);
                     .write(.tag("td"),data[[p]][[m]][["AA_wild"]],
                             .tag("/td"),file);
                     .write(.tag("td"),data[[p]][[m]][["AA_site"]],
@@ -244,7 +251,9 @@
                 }
                 else
                 {
-                    .writeTable(names(data[[p]][m]),
+					highlight_pep<-.mut_highlight(names(data[[p]][m]),
+                                data[[p]][[m]][["rel_coord"]]);
+                    .writeTable(highlight_pep,
                                 data[[p]][[m]][["AA_wild"]],
                                 data[[p]][[m]][["AA_site"]],
                                 data[[p]][[m]][["AA_mut"]],
@@ -263,6 +272,7 @@
             .ctag("br"),file);
 
     .write(.tag("div",class="top_btn"),.tag("/div"),file);  #-----.top_btn--->
+    .write(.tag("/div"),file);
     .write(.tag("/body"),file);
 }
 
@@ -285,7 +295,7 @@
             for(l in lines)
             {
                 arr=unlist(strsplit(l,"\t"));
-                pro_pep_pair=c(paste(data[[p]][["PRO"]],
+                pro_pep_pair=c(paste(data[[p]][["TRAN"]],
                     arr[10],sep="\t"),pro_pep_pair);
             }
         }
@@ -307,7 +317,7 @@
     pro_list=list()
     for(p in 2:length(data))
     {
-        pro_id=data[[p]][["PRO"]];
+        pro_id=data[[p]][["TRAN"]];
         pep_list=list();
         for(i in 2:length(data[[p]][["IMUT"]]))
         {
@@ -335,6 +345,8 @@
                     pep_list[[ arr[10] ]][["AA_wild"]]=arr[12];
                     pep_list[[ arr[10] ]][["AA_mut"]]=arr[13];
                     pep_list[[ arr[10] ]][["AA_site"]]=aa_site;
+
+                    pep_list[[ arr[10] ]][["rel_coord"]]=arr[14];
 #                     tryCatch(
 #                     {
 #                         pep_list[[ arr[10] ]][["AA_delta"]]=

@@ -180,6 +180,18 @@
     }
 }
 
+# .mut_highlight
+#
+# add the highlight tag of variant peptide.
+.mut_highlight<-function(string,site)
+{
+	site<-as.numeric(site)
+	prefix<-substr(string,0,site-1)
+	mut<-substr(string,site,site)
+	suffix<-substr(string,site+1,nchar(string))
+	pep<-paste(prefix,'<b><font color="red">',mut,'</font></b>',suffix,sep="")
+	return(pep)
+}
 
 # .mut_freq_heatmap
 #

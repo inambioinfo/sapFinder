@@ -75,8 +75,8 @@
     .write(.tag("tbody"),file);
     
     .write(.tag("tr"),file);
-    .write(.tag("th"),"Protein ID :",.tag("/th"),file);
-    .write(.tag("td"),data[["PRO"]],.tag("/td"),file);
+    .write(.tag("th"),"Transcript ID :",.tag("/th"),file);
+    .write(.tag("td"),data[["TRAN"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
     .write(.tag("tr"),file);
     .write(.tag("th"),"Gene Name :",.tag("/th"),file);
@@ -86,6 +86,28 @@
     .write(.tag("th"),"Chromosome :",.tag("/th"),file);
     .write(.tag("td"),data[["CHR"]],.tag("/td"),file);
     .write(.tag("/tr"),file);
+    
+    if(!is.null(data[["PROT"]]))
+    {
+        .write(.tag("tr"),file);
+        .write(.tag("th"),"Protein ID :",.tag("/th"),file);
+        .write(.tag("td"),data[["PROT"]],.tag("/td"),file);
+        .write(.tag("/tr"),file);
+    }
+    if(!is.null(data[["SP"]]))
+    {
+        .write(.tag("tr"),file);
+        .write(.tag("th"),"SwissProt :",.tag("/th"),file);
+        .write(.tag("td"),data[["SP"]],.tag("/td"),file);
+        .write(.tag("/tr"),file);
+    }
+    if(!is.null(data[["DESC"]]))
+    {
+        .write(.tag("tr"),file);
+        .write(.tag("th"),"Description :",.tag("/th"),file);
+        .write(.tag("td"),data[["DESC"]],.tag("/td"),file);
+        .write(.tag("/tr"),file);
+    }
     
     .write(.tag("/tbody"),file);
     .write(.tag("/table"),.tag("/div"),file);
@@ -104,7 +126,7 @@
             paste(1,20,40,60,sep=paste(rep(".",18),collapse="")),
             .tag("/p"),file);
     .write(.tag("p",class="scale"),
-            paste("|","|","|","|",sep=paste(rep("-",18),collapse="")),
+            paste("|","|","-|","-|",sep=paste(rep("-",18),collapse="")),	
             .tag("/p"),file);
     
     
@@ -177,7 +199,7 @@
             {
                 start=i*.AA.NUM.EVERY.LINE+1;
                 end=len_seq;
-                wmlist<-.writeSeq_c(pro_id=data[["PRO"]],
+                wmlist<-.writeSeq_c(pro_id=data[["TRAN"]],
                                     start=start,
                                     end=end,
                                     imut_dict=imut_dict,
@@ -192,7 +214,7 @@
         {
             start=i*.AA.NUM.EVERY.LINE+1;
             end=(i+1)*.AA.NUM.EVERY.LINE;
-            wmlist<-.writeSeq_c(pro_id=data[["PRO"]],
+            wmlist<-.writeSeq_c(pro_id=data[["TRAN"]],
                                 start=start,
                                 end=end,
                                 imut_dict=imut_dict,
@@ -364,6 +386,8 @@
         for(l in table_line)
         {
             elem=unlist(strsplit(l,"\t"));
+			elem[10]<-.mut_highlight(elem[10],elem[14])
+			elem <- elem[ 1:length(elem)-1 ]
             link_tag=.ctag("img",
                 other=paste('tipsrc="spectral/',elem[1],'.png" alt="',
                 elem[1],'" src="images/spectral_thumb.gif"',sep="")); 
@@ -464,7 +488,6 @@
     db_link<-paste(links,collapse="|")
     return(db_link)
 }
-
 
 #############################main###############################
 # .rchtml

@@ -40,10 +40,20 @@
         other=paste('type=\"text/javascript\" src=','"',target_dir,"/",
         .JAVASCRIPT.DIR,"/",.JQUERY.MIN.JS,'"',sep="")),nobreak=TRUE, file);
     .write( "</script>", file );
-    .write(.tag("script",
-        other=paste('type=\"text/javascript\" src=','"',target_dir,"/",
-        .JAVASCRIPT.DIR,"/",.INDEX.JS,'"',sep="")),nobreak=TRUE, file);
-    .write( "</script>", file );
+    if(mode==0)
+    {
+        .write(.tag("script",
+            other=paste('type=\"text/javascript\" src=','"',target_dir,"/",
+            .JAVASCRIPT.DIR,"/",.INDEX.JS,'"',sep="")),nobreak=TRUE, file);
+        .write( "</script>", file );
+	}
+    else if (mode>0)
+    {
+        .write(.tag("script",
+            other=paste('type=\"text/javascript\" src=','"',target_dir,"/",
+            .JAVASCRIPT.DIR,"/","index2.js",'"',sep="")),nobreak=TRUE, file);
+        .write( "</script>", file );
+    }
     .write(.tag("link",
         other=paste('rel="stylesheet" type="text/css" href=','"',target_dir,
         "/",.CSS.DIR,"/",.INDEX.CSS,'"',sep="")),nobreak=TRUE, file);
@@ -81,6 +91,10 @@
         .write(.tag("li"),
             .tag("a",other=.concat('href="',.PAGE.DIR,'/index_db.html"')),
             "Database Stat",.tag("/a"),.tag("/li"),file);
+		.write(.tag("li",class="bg_bar line"),.tag("/li"),file);
+        .write(.tag("li"),
+            .tag("a",other=.concat('href="',.PAGE.DIR,'/index_help.html"')),
+            "Help",.tag("/a"),.tag("/li"),file);
         .write(.tag("li",class="bg_bar line"),.tag("/li"),file);
     }
     else if (mode>0)
@@ -93,6 +107,9 @@
         .write(.tag("li",class="bg_bar line"),.tag("/li"),file);
         .write(.tag("li"),.tag("a",other='href="index_db.html"'),
             "Database Stat",.tag("/a"),.tag("/li"),file);
+		 .write(.tag("li",class="bg_bar line"),.tag("/li"),file);
+        .write(.tag("li"),.tag("a",other='href="index_help.html"'),
+            "Help",.tag("/a"),.tag("/li"),file);
         .write(.tag("li",class="bg_bar line"),.tag("/li"),file);
         
     }
@@ -138,6 +155,13 @@
             other=paste('src="','db_stat.html" name="main" frameborder="0"'
             ,sep="")),.tag("/iframe"),file);
     }
+	else if(mode==3)
+	{
+		.write(.tag("iframe",id="main",class="seq_cn",
+            other=paste('src="','help.html" name="main" frameborder="0"'
+            ,sep="")),.tag("/iframe"),file);
+
+	}
     #--foot-->
     #.write(.tag("div",class="seq_foot"),file);
     #.write(.tag("div",class="seq_footl"),file);
@@ -188,6 +212,10 @@
     else if(mode==2)
     {
         fn=.concat(.PAGE.DIR,"/index_db");
+    }    
+	else if(mode==3)
+    {
+        fn=.concat(.PAGE.DIR,"/index_help");
     }
     else
     {

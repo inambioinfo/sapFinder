@@ -3,25 +3,30 @@
 \title{dbCreator}
 \usage{
 dbCreator(vcf = NULL, annotation = NULL, refseq = NULL, outdir = "./",
-    prefix = "test", xmx = NULL)
+  prefix = "test", xmx = NULL, xref = "noxref")
 }
 \arguments{
-    \item{vcf}{Input VCF file name. This file contains the
-    information of gene sequence variations.}
+  \item{vcf}{Input VCF file name. This file contains the
+  information of gene sequence variations.}
 
-    \item{annotation}{Input annotation file name. It contains
-    the gene annotation information and can be downloaded
-    from UCSC Genome Browser.Currently it supports RefSeq
-    genes and ENSEMBL genes annotation file.}
+  \item{annotation}{Input annotation file name. It contains
+  the gene annotation information and can be downloaded
+  from UCSC Genome Browser.Currently it supports RefSeq
+  genes and ENSEMBL genes annotation file.}
 
-    \item{refseq}{Input mRNA sequences file with FASTA
-    format. It can be downloaded from UCSC Genome Browser.}
+  \item{refseq}{Input mRNA sequences file with FASTA
+  format. It can be downloaded from UCSC Genome Browser.}
 
-    \item{outdir}{Output directory.}
+  \item{outdir}{Output directory.}
 
-    \item{prefix}{The prefix of output file.}
+  \item{prefix}{The prefix of output file.}
 
-    \item{xmx}{The maximum Java heap size. The unit is "G".}
+  \item{xmx}{The maximum Java heap size. The unit is "G".}
+
+  \item{xref}{Optional external cross-reference
+  file,generally it's downloaded through BioMart.If this
+  file is provided,the final html report will present some
+  relevant protein id or description.}
 }
 \value{
 A vector containing two file names. One is a FASTA format
@@ -41,10 +46,12 @@ annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
                         package="sapFinder")
 refseq     <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
                         package="sapFinder")
+xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+                        package="sapFinder")
 outdir     <- "db_dir"
 prefix     <- "sapFinder_test"
 db.files <- dbCreator(vcf=vcf, annotation=annotation,
                 refseq=refseq, outdir=outdir,
-                prefix=prefix)
+                prefix=prefix,xref=xref)
 }
 

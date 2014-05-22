@@ -3,40 +3,43 @@
 \title{reportCreator}
 \usage{
 reportCreator(indir = ".", outdir = .REPORT.DIR, db = NULL,
-    prefix = NULL, varInfor = NULL)
+  prefix = NULL, varInfor = NULL)
 }
 \arguments{
-    \item{indir}{The directory of output files of function
-    \code{parserGear}.}
+  \item{indir}{The directory of output files of function
+  \code{parserGear}.}
 
-    \item{outdir}{Output directory for this report}
+  \item{outdir}{Output directory for this report}
 
-    \item{db}{A FASTA format database file used for MS/MS
-    searching. Usually, it is from the output of the function
-    \code{dbCreator}.}
+  \item{db}{A FASTA format database file used for MS/MS
+  searching. Usually, it is from the output of the function
+  \code{dbCreator}.}
 
-    \item{prefix}{It must be set the same with the parameter
-    of "prefix" in function \code{parserGear}.}
+  \item{prefix}{It must be set the same with the parameter
+  of "prefix" in function \code{parserGear}.}
 
-    \item{varInfor}{It is a tab-delimited file contains
-    detailed variation information and is from the output of
-    the function \code{dbCreator}.}
+  \item{varInfor}{It is a tab-delimited file contains
+  detailed variation information and is from the output of
+  the function \code{dbCreator}.}
 }
 \description{
 This function is used for HTML-based report writing
 }
 \examples{
+## Step 1. Variation-associated database construction
 vcf        <- system.file("extdata/sapFinder_test.vcf",
-                            package="sapFinder")
+                        package="sapFinder")
 annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
-                            package="sapFinder")
+                        package="sapFinder")
 refseq     <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
-                            package="sapFinder")
+                        package="sapFinder")
+xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
+                        package="sapFinder")
 outdir     <- "db_dir"
 prefix     <- "sapFinder_test"
 db.files <- dbCreator(vcf=vcf, annotation=annotation,
-                    refseq=refseq, outdir=outdir,
-                    prefix=prefix)
+                refseq=refseq, outdir=outdir,
+                prefix=prefix,xref=xref)
 
 ## Step 2. MS/MS searching
 mgf.path   <- system.file("extdata/sapFinder_test.mgf",

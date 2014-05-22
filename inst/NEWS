@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.1.2
+-------------------------
+NEW FEATURES
+    *Add the support of cross-reference files from Biomart.
+    *Highlight the fragment ions from the SAP in the spectral view.
+    *Add help document page.
+
+CHANGES IN VERSION 1.1.1
+-------------------------
+BUG FIXES
+    *To use "std::map"" instead of "tr1/unordered_map",so that sapFinder can work well on Mac OS X (10.9.2)
+
+
 CHANGES IN VERSION 0.99.4
 -------------------------
 BUG FIXES

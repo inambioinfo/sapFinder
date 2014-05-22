@@ -51,7 +51,7 @@
 .writeBody_g<-function(data,file)
 {
     .write(.tag("body"),file);
-    .write(.tag("div",class="seq_ctl_top"),"Protein List",.tag("/div"),file);
+    .write(.tag("div",class="seq_ctl_top"),"Index List",.tag("/div"),file);
     .write(.tag("ul",id="seq_ul"),file);
     #.write(.tag("li"),.tag("span"),.tag("/span"),file); 
     for(p in 2:length(data))
@@ -59,7 +59,7 @@
         .write(.tag("li"),
             .tag("a",other=paste('href="',names(data[p]),
             '.html" target="main"',sep="")),
-            data[[p]][["PRO"]],.tag("/a"),.tag("/li"),file);
+            data[[p]][["TRAN"]],.tag("/a"),.tag("/li"),file);
     }
     .write(.tag("/ul"),file);
     

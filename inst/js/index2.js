@@ -72,13 +72,9 @@ function cnt_hg_adj(){
 	var win_hg=$(window).height();
 	/*
 	 * BUG FIX: index页面加载时变形
-	 * 首先，不能像之前一样省略if($(".seq_contentl").css("display")这个判断，否则初始化不会出问题，但不能排版的页面间跳转会混乱。由于'$(".seq_contentl").css("display")'这句在载入时往往会丢失判断，导致运行else里的语句，因此，最好不要判断display为block,改而判断其是否为none（之所以这样是因为默认leftside bar是展开的。）。
+	 * 由于Search Stat和Database Stat页面是没有left side bar的，因此不要用index.js中的cnt_hg_adj()函数，因为根本不存在seq_contentl属性。这里只需要直接赋值即可。
 	 */
-	if($(".seq_contentl").css("display")=="none"){ 
-		seq_cn_wid=win_wid - 10 + "px";
-	}else{
-		seq_cn_wid=win_wid - 257 + "px";	
-	}
+	seq_cn_wid=win_wid + "px";
 	if($(".header").css("display")=="block"){
 		seq_cn_hg=win_hg - 143 + "px";		
 	}else{
