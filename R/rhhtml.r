@@ -60,20 +60,20 @@
     #.write(.tag("h1"),"Summary List",.tag("/h1"),.ctag("br"),file);
     .write(.tag("div",other='style="text-align:center"'),file);
     
-    .write(.ctag("img",other=paste('style="width:850px" 
+    .write(.ctag("img",other=paste('style="width:800px" 
             src="images/help_images/help1.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),"The main page of this report."
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     
-    .write(.ctag("img",other=paste('style="width:850px" 
+    .write(.ctag("img",other=paste('style="width:650px" 
             src="images/help_images/help2.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),"The description section.",.tag("/p"),file);
     .write(.tag("/div"),file);
     
-    .write(.ctag("img",other=paste('style="width:850px" 
+    .write(.ctag("img",other=paste('style="width:800px" 
             src="images/help_images/help3.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),
@@ -91,7 +91,7 @@
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     
-    .write(.ctag("img",other=paste('style="width:850px" 
+    .write(.ctag("img",other=paste('style="width:900px" 
             src="images/help_images/help4.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),
@@ -103,7 +103,7 @@
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     
-    .write(.ctag("img",other=paste('style="width:850px" 
+    .write(.ctag("img",other=paste('style="width:600px" 
             src="images/help_images/help5.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),
@@ -116,7 +116,7 @@
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     
-    .write(.ctag("img",other=paste('style="width:850px" 
+    .write(.ctag("img",other=paste('style="width:900px" 
             src="images/help_images/help6.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),
@@ -125,7 +125,7 @@
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     
-    .write(.ctag("img",other=paste('style="width:850px" 
+    .write(.ctag("img",other=paste('style="width:800px" 
             src="images/help_images/help7.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),
@@ -167,7 +167,7 @@
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     
-    .write(.ctag("img",other=paste('style="width:850px" 
+    .write(.ctag("img",other=paste('style="width:900px" 
             src="images/help_images/help8.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),

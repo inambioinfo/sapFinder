@@ -13,6 +13,7 @@ BiocStyle::latex(use.unsrturl=FALSE)
 \usepackage{url}
 \usepackage[numbers]{natbib}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage[section]{placeins}
 \bibliographystyle{plainnat}
 
@@ -142,7 +143,27 @@ annotation file and mRNA Sequence file.
 Users only need to choose one type of above annotation files 
 (Refseq or Ensembl) to download.
 
+\subsubsection{The external cross reference file}
+The xref file is an optional input for sapFinder.You can obtain it from 
+BioMart Central Portal 
+(\url{http://central.biomart.org/martwizard/#!/Search_by_database_name?mart=Ensembl 75 Genes (WTSI, UK)}) 
+or MartView (\url{http://biomart.intogen.org/biomart/martview/}),The following table 
+shows the major features must be selected:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.35\textwidth]{biomart.png}
+\caption{Summary of biomart features}
+\label{fig:xref}
+\end{figure}
+
+
 \subsubsection{Example code}
+In additon to download the annotation files and xref file by yourself,
+you also can obtain them,which I've downloaded recently,from the 
+\verb|sapfinder_pipeline| repository in bitbucket 
+(\url{https://bitbucket.org/xushaohang/sapfinder_pipeline}).You can find 
+them in the \verb|"annotation_files"| directory.
 
 For our example, we take part of the data from a recently 
 publised study \citep{gloria2014}. 
