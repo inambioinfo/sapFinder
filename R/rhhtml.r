@@ -77,17 +77,14 @@
             src="images/help_images/help3.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),
-            'The identified SAPs are highlighted in red in the sequence. 
-            The un-identified SAP is highlighted in gray. When you hover 
-            your mouse pointer over the SAP, the amino acid substitution 
-            will display in a small box next to the mouse. If you want to 
-            access the basic information about the mutation, you can single 
-            click the SAP. Only the identified-SAPs have the "MSMS Summary" 
-            section. At the same time, the "MSMS Summary" section in the 
-            identified-SAPs bubble tips will also only contain the basic 
-            identification result of relevant SAP. In addition, you can view 
-            the labeled spectra with SAP by clicking the first column of 
-            "MSMS Summary".'
+            'The identified SAPs are highlighted in red, and the un-identified 
+            SAPs in gray. Point the SAP with your mouse, the amino acid 
+            substitution will display in a small box. Click the SAP, you can 
+            get more detailed information about the mutation, such as its 
+            chromosome position and the corresponding MS/MS spectra. Only the 
+            identified SAPs have the "MSMS Summary" section, and the labeled 
+            spectra of the peptide with SAP could be viewed by clicking the 
+            first column of "MSMS Summary".'
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     
@@ -95,11 +92,11 @@
             src="images/help_images/help4.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),
-            'If you want to check the whole identified peptides of the 
-            corresponding proteins, you can get them from the "Peptide 
-            Summary Report" section. You can distinguish between variant 
-            and wild-type peptides by the column "isSAP". In addition, the 
-            column "miss" represents the number of missed cleavage.'
+            'The "Peptide Summary Report" section provides the whole list of 
+            identified peptides of the corresponding proteins, in which the 
+            column of "isSAP" indicates whether the peptide contains SAP, while 
+            the column of "miss" means the number of missed cleavages in the 
+            peptides.'
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     
@@ -129,41 +126,38 @@
             src="images/help_images/help7.png"',sep="")),.ctag("br"),file);
     .write(.tag("div",id='plaincontent'),file);
     .write(.tag("p",class='ident'),
-            'In Search Stat page, there is a "Summary Table" section that 
-            include all of the Variant Peptide detected in this workflow. 
-            And through the Link column, being able to jump to the 
-            corresponding Protein. The meanings of different columns 
-            are as follows:'
+            'In the Search Stat page, there is a "Summary Table" in which 
+            all of the Variant Peptide detected in this workflow are included. 
+            The meanings of each column is as following:'
             ,.tag("/p"),file);
     .write(.tag("p",class='ident'),
-           '1."AA_wild" column represents the wild-type amino acid.'
+            '1."AA_wild" column represents the wild-type amino acid.'
            ,.tag("/p"),file);
     .write(.tag("p",class='ident'),
-            '2."AA_site" column represents the site of amino acid 
-            change in the coding sequence.'
+            '2."AA_site" column represents the position of the mutation site 
+            in the coding sequence.'
             ,.tag("/p"),file);
     .write(.tag("p",class='ident'),
            '3."AA_mut" column represents the variant amino acid.'
            ,.tag("/p"),file);
     .write(.tag("p",class='ident'),
-            '4."AA_delta(Da)" column represents the difference between 
-            variant and wild-type amino acids (AA_mut - AA_wild).'
+            '4."AA_delta (Da)" column represents the mass difference of 
+            variant from wild-type amino acids (AA_mut - AA_wild).'
             ,.tag("/p"),file);
     .write(.tag("p",class='ident'),
-            '5."Evalue" column represents  the maximum E-value of 
+            '5."Evalue" column represents the maximal E-value of 
             corresponding peptide.'
             ,.tag("/p"),file);
     .write(.tag("p",class='ident'),
-            '6."SPC" column represents the spectral counting of 
-            identified peptide.'
+            '6."SPC" column represents the spectral counting of each peptide.'
             ,.tag("/p"),file);
     .write(.tag("p",class='ident'),
-            '7."isUnique" column represents the variant peptide is 
+            '7."isUnique" column represents whether the variant peptide is 
             unique to one particular protein or not.'
             ,.tag("/p"),file);
     .write(.tag("p",class='ident'),
             '8."isWM" column represents whether the variant peptide and 
-            corresponding wild-type peptide are identified at the same time.'
+            corresponding wild-type peptide are both identified or not.'
             ,.tag("/p"),file);
     .write(.tag("/div"),file);
     

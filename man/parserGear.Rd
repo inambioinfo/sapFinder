@@ -7,8 +7,8 @@ parserGear(file = NULL, db = NULL, outdir = "parser_outdir",
   alignment = 1, xmx = NULL, thread = 1)
 }
 \arguments{
-  \item{file}{MS/MS searching file. Currently, only XML
-  format result file of X!Tandem is supported.}
+  \item{file}{MS/MS search file. Currently, only XML format
+  file of X!Tandem and DAT result of Mascot are supported.}
 
   \item{db}{A FASTA format database file used for MS/MS
   searching. Usually, it is from the output of the function

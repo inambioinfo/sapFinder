@@ -50,7 +50,7 @@ xml.path   <- runTandem(spectra=mgf.path, fasta=fasta.path, outdir=".",
 
 ## Step 3. Post-processing
 parserGear(file=xml.path, db=fasta.path, prefix=prefix,
-            outdir="parser_outdir", alignment=1)
+            outdir="parser_outdir")
 
 ## Step 4. HTML-based report generation
 reportCreator(indir="parser_outdir", outdir="report", db=fasta.path,

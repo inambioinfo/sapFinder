@@ -47,7 +47,7 @@ This vignette describes the functionality implemented in the
 \section{Variation-associated database construction}
 %------------------------------------------------------------------
 
-Currently, two kind of variation-associated databases can be constructed by 
+Currently, two kinds of variation-associated databases can be constructed by 
 using \Rpackage{sapFinder} package. One is the sample-specific 
 variation-associated database and the other is the aggregate database that 
 is created from the public SNV repositories, such as dbSNP \citep{dbsnp} and 
@@ -64,8 +64,8 @@ To construct sample-specific variation-associated database by using
 \Rpackage{sapFinder}, three files are required as input. One is a Variant 
 Call Format (VCF) file which can be generated from a BAM file using single 
 nucleotide polymorphism calling tools such as SAMtools \citep{samtool} and 
-The Genome Analysis Toolkit (GATK) \citep{gatk}. The other two files are a 
-gene annotation file and a FASTA format mRNA sequences file which can be 
+the Genome Analysis Toolkit (GATK) \citep{gatk}. The other two files are 
+gene annotation file and FASTA format mRNA sequence file which can be 
 downloaded by users from the University of California, Santa Cruz (UCSC) 
 table browser. For non-model organisms, users can manually provide these 
 files in the format of NCBI or ENSEMBL.
@@ -82,7 +82,7 @@ Currently,before the construction of variation-associated database,it
 requires users to download a tab-separated positional table annotation 
 file and a corresponding mRNA sequence FASTA file from UCSC table brower.
 Since Refseq updates from time to time, we suggest generating those files 
-the same day as running.
+in a same day as running.
 
 The bullet list below summarizes the steps to download RefSeq genes annotation 
 file and mRNA Sequence file.
@@ -140,7 +140,7 @@ annotation file and mRNA Sequence file.
 \end{itemize}
 \end{itemize}
 
-Users only need to choose one type of above annotation files 
+Users need only to choose one type of annotation files above
 (Refseq or Ensembl) to download.
 
 \subsubsection{The external cross reference file}
@@ -160,12 +160,11 @@ shows the major features must be selected:
 
 \subsubsection{Example code}
 In additon to download the annotation files and xref file by yourself,
-you also can obtain them,which I've downloaded recently,from the 
-\verb|sapfinder_pipeline| repository in bitbucket 
-(\url{https://bitbucket.org/xushaohang/sapfinder_pipeline}).You can find 
-them in the \verb|"annotation_files"| directory.
+you can also obtain them from the \verb|sapfinder_pipeline| repository in bitbucket 
+(\url{https://bitbucket.org/xushaohang/sapfinder_pipeline}) in the 
+\verb|"annotation_files"| directory.
 
-For our example, we take part of the data from a recently 
+The example data is extracted from a recently 
 publised study \citep{gloria2014}. 
 
 <<createdb, echo=TRUE, cache=FALSE, tidy=FALSE>>=
@@ -187,14 +186,14 @@ db.files <- dbCreator(vcf=vcf, annotation=annotation,
 
 Two files are outputed. One is a variation-associated database file which 
 is written in FASTA format to the directory specified and contains the 
-mutated peptides, the normal protein sequences and their reverse versions. 
+mutated peptides, the normal protein sequences and their reverse counterparts. 
 The other is a tab-delimited file which contains the variant peptides 
 information. Both files will be used in the following steps.
 
 \subsection{Based on public SNV database}
 
 The usage of creating variation-associated database from public SNV 
-repositories is the same with that based on sample-specific SNV data. 
+repositories is same as that based on sample-specific SNV data. 
 Currently, \Rpackage{sapFinder} can be used to create variation-associated 
 database based on the data from dbSNP \citep{dbsnp} and COSMIC \citep{cosmic}. 
 The required VCF files can be downloaded from their ftp sites.
@@ -203,10 +202,10 @@ The required VCF files can be downloaded from their ftp sites.
 \section{MS/MS data searching}
 %------------------------------------------------------------------
 
-After the variation-associated database construction, \Biocpkg{rTANDEM} 
+After the variation-associated database constructed, \Biocpkg{rTANDEM} 
 package \citep{rTANDEM} is adopted to search the database against tandem 
 mass spectra to detect variant peptides. \Biocpkg{rTANDEM} package interfaces 
-the popular used open source search engine \software{X!Tandem} \citep{tandem} 
+with the popular used open source search engine \software{X!Tandem} \citep{tandem} 
 algorithm in R.
 
 <<databasesearching, echo=TRUE, cache=FALSE, tidy=FALSE>>=
@@ -222,6 +221,10 @@ xml.path <- runTandem(spectra=mgf.path, fasta=protein.db,
 The results are written in xml format to the directory specified and will 
 be loaded for further processing.
 
+This function also accepts the "raw" Mascot result file as input(data 
+format). Unfortunately,we don't offer the wrapper function for Mascot 
+search under current conditions. So you have to launch the independent
+identification by Mascot.
 %------------------------------------------------------------------
 \section{Post-processing}
 %------------------------------------------------------------------
@@ -229,22 +232,22 @@ be loaded for further processing.
 After the MS/MS data searching, the function \Rfunction{tanparser} can be 
 used to parse the search result. It calculates the q-value for each peptide 
 spectrum matches (PSMs) and then utilizes the Occam's razor approach 
-\citep{Nesvizhskii2003} to deal with degenerate wild peptides by finding a 
+\citep{Nesvizhskii2003} to deal with degenerated wild peptides by finding a 
 minimum subset of proteins that covered all of the identified wild peptides. 
 <<parserGear, echo=TRUE, cache=FALSE, tidy=FALSE>>=
 parserGear(file=xml.path, db=db.files[1],
-            outdir='parser_outdir', prefix=prefix,alignment=1)
+            outdir='parser_outdir', prefix=prefix)
 @
 
 It exports some tab-delimited files containing the peptide identification 
-result and protein identification result. And the annotated spectra for 
+result and protein identification result. The annotated spectra for 
 the identified variant peptides which pass the threshold are exported.
 
 %------------------------------------------------------------------
 \section{HTML-based report generation}
 %------------------------------------------------------------------
 
-The results are then summarised and compiled into an interactive html report.
+The results are then summarised and compiled into an interactive HTML report.
 
 <<reportg, echo=TRUE, cache=FALSE, tidy=FALSE>>=
 reportCreator(indir="parser_outdir", 
@@ -268,7 +271,7 @@ It will process the dataset in the following way:
 \item HTML-based report generation
 \end{enumerate}
 
-This function can be called as follows:
+This function can be called as following:
 <<auto, echo=TRUE, cache=FALSE, tidy=FALSE>>=
 vcf        <- system.file("extdata/sapFinder_test.vcf",
                         package="sapFinder")
@@ -283,7 +286,7 @@ xref       <- system.file("extdata/sapFinder_test_BioMart.Xref.txt",
 easyRun(vcf=vcf,annotation=annotation,refseq=refseq,
         outdir="test",prefix="sapFinder_test",
         spectra=mgf.path,cpu=0,tol=10, tolu="ppm", 
-        itol=0.1,itolu="Daltons",alignment=1,xref=xref)
+        itol=0.1,itolu="Daltons",xref=xref)
 @
 After the analysis has completed, the file \file{index.html} in the 
 output directory can be opened
@@ -293,8 +296,7 @@ in a web browser to access report generated.
 \section{Session Info}
 %------------------------------------------------------------------
 
-Here is the output of \Rfunction{sessionInfo} on the system on which 
-this document was compiled:
+Here is the output of \Rfunction{sessionInfo}:
 <<sessionInfo, results=tex, print=TRUE>>=
 toLatex(sessionInfo())
 @

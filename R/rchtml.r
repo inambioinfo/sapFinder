@@ -386,8 +386,8 @@
         for(l in table_line)
         {
             elem=unlist(strsplit(l,"\t"));
-			elem[10]<-.mut_highlight(elem[10],elem[14])
-			elem <- elem[ 1:length(elem)-1 ]
+			elem[10]<-.mut_highlight(elem[10],elem[14])	
+			elem <- elem[ 1:length(elem)-1 ]	
             link_tag=.ctag("img",
                 other=paste('tipsrc="spectral/',elem[1],'.png" alt="',
                 elem[1],'" src="images/spectral_thumb.gif"',sep="")); 

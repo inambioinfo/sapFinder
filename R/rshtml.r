@@ -346,7 +346,7 @@
                     pep_list[[ arr[10] ]][["AA_mut"]]=arr[13];
                     pep_list[[ arr[10] ]][["AA_site"]]=aa_site;
 
-                    pep_list[[ arr[10] ]][["rel_coord"]]=arr[14];
+                    pep_list[[ arr[10] ]][["rel_coord"]]=arr[14];	
 #                     tryCatch(
 #                     {
 #                         pep_list[[ arr[10] ]][["AA_delta"]]=

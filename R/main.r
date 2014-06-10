@@ -71,8 +71,8 @@ dbCreator=function(vcf=NULL, annotation=NULL, refseq=NULL,
 #' @title parserGear
 #' @description This function is mainly for q-value calculation, 
 #' protein inference and variant peptides spectra annotation.
-#' @param file MS/MS searching file. Currently, only XML format result file 
-#' of X!Tandem is supported. 
+#' @param file MS/MS search file. Currently, only XML format file 
+#' of X!Tandem and DAT result of Mascot are supported. 
 #' @param db A FASTA format database file used for MS/MS searching. 
 #' Usually, it is from the output of the function \code{dbCreator}.
 #' @param outdir Output directory. 
@@ -120,21 +120,59 @@ parserGear=function(file=NULL,db=NULL,outdir="parser_outdir",
                     mutPrefix="VAR",decoyPrefix="###REV###",
                     alignment=1,xmx=NULL,thread=1)
 {
+    
+    regx=regexpr("xml$",file,perl=TRUE);
+    regd=regexpr("dat$",file,perl=TRUE);
     if(is.null(xmx))
     {
-        ph<-paste("java","-jar",collapse=" ",sep=" ")
+        if(regx[1]!=-1)
+        {
+            ph<-paste("java","-jar",
+                    paste("\"",
+                        paste(system.file("parser4sapFinder.jar",
+                            package="sapFinder"),sep="",collapse=""),
+                    "\"",sep=""),  
+                collapse=" ",sep=" ")
+            alignment=1;
+        }
+        else if(regd!=-1)
+        {
+            ph<-paste("java","-cp",
+                    paste("\"",
+                        paste(system.file("parser4sapFinder.jar",
+                            package="sapFinder"),sep="",collapse=""),
+                    "\"",sep=""),
+                    "cn.bgi.MascotParser",
+                collapse=" ",sep=" ")
+            alignment=0;
+        }
     }
     else
     {
-        ph<-paste("java",paste("-Xmx",xmx,"G",sep=""),"-jar",
-                collapse=" ",sep=" ")
+        if(regx[1]!=-1)
+        {
+            ph<-paste("java",paste("-Xmx",xmx,"G",sep=""),"-jar",
+                    paste("\"",
+                        paste(system.file("parser4sapFinder.jar",
+                            package="sapFinder"),sep="",collapse=""),
+                    "\"",sep=""), 
+                collapse=" ",sep=" ");
+            alignment=1;
+        }
+        if(regd[1]!=-1)
+        {
+            ph<-paste("java",paste("-Xmx",xmx,"G",sep=""),"-cp",
+                    paste("\"",
+                        paste(system.file("parser4sapFinder.jar",
+                            package="sapFinder"),sep="",collapse=""),
+                    "\"",sep=""),
+                    "cn.bgi.MascotParser",
+                collapse=" ",sep=" ");
+            alignment=0;
+        }
     }
     
     tandemparser=paste(ph,
-                        paste("\"",
-                            paste(system.file("sapFinder.jar",
-                                    package="sapFinder"),sep="",collapse=""),
-                            "\"",sep=""),  
                         paste("\"",file,"\"",sep=""), 
                         paste("\"",db,"\"",sep=""), 
                         paste("\"",prefix,"\"",sep=""), 
@@ -184,7 +222,7 @@ parserGear=function(file=NULL,db=NULL,outdir="parser_outdir",
 #' 
 #' ## Step 3. Post-processing
 #' parserGear(file=xml.path, db=fasta.path, prefix=prefix, 
-#'             outdir="parser_outdir", alignment=1)
+#'             outdir="parser_outdir")
 #' 
 #' ## Step 4. HTML-based report generation
 #' reportCreator(indir="parser_outdir", outdir="report", db=fasta.path, 
@@ -230,7 +268,7 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
     cat("    Step 1: Reading the Info.\n");
     dobj<-.dataHandle_R(pep.summary.path, varInfor, db);
     gc()  # call garbage collection
-    #save(dobj,file=paste("test/report/dataHandle.out.RData", sep = "")) #debug
+    #save(dobj,file=paste("dataHandle.out.RData", sep = "")) #debug
     if(length(dobj)==1){
         stop("None variant peptide is identified!\n");
     }
