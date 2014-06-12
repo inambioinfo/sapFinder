@@ -221,10 +221,6 @@ xml.path <- runTandem(spectra=mgf.path, fasta=protein.db,
 The results are written in xml format to the directory specified and will 
 be loaded for further processing.
 
-This function also accepts the "raw" Mascot result file as input(data 
-format). Unfortunately,we don't offer the wrapper function for Mascot 
-search under current conditions. So you have to launch the independent
-identification by Mascot.
 %------------------------------------------------------------------
 \section{Post-processing}
 %------------------------------------------------------------------
@@ -242,6 +238,17 @@ parserGear(file=xml.path, db=db.files[1],
 It exports some tab-delimited files containing the peptide identification 
 result and protein identification result. The annotated spectra for 
 the identified variant peptides which pass the threshold are exported.
+
+This function also accepts the "raw" Mascot result file as input(dat 
+format). For instance,
+<<mascotParser, eval=FALSE, echo=TRUE, cache=FALSE, tidy=FALSE>>=
+dat_file<-"mascot_raw.dat"
+parserGear(file=dat_file, db=db.files[1],
+            outdir='parser_outdir', prefix=prefix)
+@
+Unfortunately,we don't offer the wrapper function for Mascot 
+search under current conditions. So you have to launch the independent
+identification by Mascot.
 
 %------------------------------------------------------------------
 \section{HTML-based report generation}
