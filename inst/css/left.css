@@ -1,0 +1,130 @@
+*{
+	margin:0px;
+	padding:0px;
+	font-family:"Times New Roman";
+	}
+ul,li,dl,dt,dd{
+	list-style:none	/*list-style用于设置列表项标志的类型，如圆点，星号，数字等，none表示不显示*/
+	}
+body{
+	font-size:12px;
+	overflow:hidden;
+	}
+html{
+	overflow:hidden;
+	}
+a{
+	color:#303030;
+	text-decoration:none;
+	outline:none;
+	hide-focus:expression(this.hideFocus=true);
+	}
+a:hover{
+	color:#266dbb;
+	text-decoration:none;
+	outline:none;
+	hide-focus:expression(this.hideFocus=true);
+	}
+.flleft{
+	float:left; /*float 属性定义元素在哪个方向浮动*/
+	}
+.tc{
+	text-align:center;
+	}
+.header{
+	display:block;
+	width:100%;
+	min-width:1040px;
+	height:76px;
+	overflow:hidden; /*overflow 属性规定当内容溢出元素框时发生的事情。可能值：visible默认值。内容不会被修剪，会呈现在元素框之外；hidden内容会被修剪，并且其余内容是不可见的；scroll	内容会被修剪，但是浏览器会显示滚动条以便查看其余的内容。auto如果内容被修剪，则浏览器会显示滚动条以便查看其余的内容。*/
+	background:#ffffff;
+	}
+.title{
+	font-size:27px;
+	color:#181818;
+	float:left;
+	margin-left:18px;
+	_display:inline;	/*在属性名前加上下划线"_",这个Hack只有IE系列 (除IE7外) 识别。*/
+	font-family:"Times New Roman";
+	font-weight:bold;
+	}
+.seq_ctl_top{
+	background:url(../images/seq_ctl_topbg.gif) repeat-x left top;
+	width:221px;
+	height:23px;
+	color:#000000;
+	padding:10px 0px 0px 25px;
+	font-size:13px;
+	margin-bottom:1px;
+	}
+ul#seq_ul{
+	padding:15px 20px 0px 27px;
+	width:199px;
+	height:auto;
+	overflow:hidden
+	}
+ul#seq_ul li ul{
+	display:none;
+	padding-top:5px;
+	padding-left:25px;
+	width:164px;
+	height:auto;
+	overflow:hidden;
+	}
+ul#seq_ul li{
+	float:left;
+	padding-bottom:7px;	
+	position:relative;
+	}
+ul#seq_ul li span{
+	position:absolute;
+	left:0px;
+	top:0px;	
+	float:left;
+	width:18px;
+	height:14px;
+	background:url(../images/plus.gif) no-repeat left 5px;	
+	cursor:pointer;
+    }
+ul#seq_ul li span.click{
+	background:url(../images/minus.gif) no-repeat left 5px;
+	}		
+ul#seq_ul li a,ul#seq_ul li ul li a{	
+	display:block;
+	width:171px;
+	height:auto;
+	line-height:18px;
+	padding-left:18px;
+	color:#5c5c5c;
+	float:left;
+	_display:inline;
+	overflow:hidden;
+	}
+ul#seq_ul li ul li a{
+	background:none;
+	padding-left:10px;
+	width:154px;	
+	}
+ul#seq_ul li a:hover,ul#seq_ul li ul li a:hover{
+	color:#266dbb
+	}
+
+/*go top按钮的css置*/
+.top_btn{
+	position:fixed;
+	right:15px;
+	bottom:25px;
+	width:18px;
+	height:68px;
+	background:url(../images/sequence.png) no-repeat -195px -32px;
+	cursor:pointer;
+	}		
+.top_btn_hv{
+	background:url(../images/sequence.png) no-repeat -214px -32px;
+	}
+* html .top_btn{
+	position:absolute;
+	left:expression(eval(document.documentElement.scrollLeft+document.documentElement.clientWidth-this.offsetWidth)-(parseInt(this.currentStyle.marginLeft,10)||0)-(parseInt(this.currentStyle.marginRight,10)||0)-15);
+	top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0))-25);
+	}
+
