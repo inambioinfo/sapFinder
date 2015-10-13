@@ -1,0 +1,312 @@
+@charset "utf-8";
+/**=========下面为总体的布局============**/
+body {
+	font: 100%/1.4 Verdana, Arial, Helvetica, sans-serif;
+	background-color: #42413C;
+	margin: 0;
+	padding: 0;
+	color: #000;
+}
+
+/* ~~ 元素/标签选择器 ~~ */
+ul, ol, dl { /* 由于浏览器之间的差异，最佳做法是在列表中将填充和边距都设置为零。为了保持一致，您可以在此处指定需要的数值，也可以在列表所包含的列表项（LI、DT 和 DD）中指定需要的数值。请注意，除非编写一个更为具体的选择器，否则您在此处进行的设置将会层叠到 .nav 列表。 */
+	padding: 0;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin-top: 0;	 /* 删除上边距可以解决边距会超出其包含的 div 的问题。剩余的下边距可以使 div 与后面的任何元素保持一定距离。 */
+	padding-right: 15px;
+	padding-left: 15px; /* 向 div 内的元素侧边（而不是 div 自身）添加填充可避免使用任何方框模型数学。此外，也可将具有侧边填充的嵌套 div 用作替代方法。 */
+}
+a img { /* 此选择器将删除某些浏览器中显示在图像周围的默认蓝色边框（当该图像包含在链接中时） */
+	border: none;
+}
+/* ~~ 站点链接的样式必须保持此顺序，包括用于创建悬停效果的选择器组在内。 ~~ */
+a:link {
+	color: #42413C;
+	text-decoration: underline; /* 除非将链接设置成极为独特的外观样式，否则最好提供下划线，以便可从视觉上快速识别 */
+}
+a:visited {
+	color: #6E6C64;
+	text-decoration: underline;
+}
+a:hover, a:active, a:focus { /* 此组选择器将为键盘导航者提供与鼠标使用者相同的悬停体验。 */
+	text-decoration: none;
+}
+
+/* ~~ 此固定宽度容器包含所有其它元素 ~~ */
+.container {
+	/*width: 960px;*/
+	width:80%;
+	margin-left:10%;
+	background-color: #FFF;
+	margin: 0 auto; /* 侧边的自动值与宽度结合使用，可以将布局居中对齐 */
+}
+
+/* ~~ 这是布局信息。 ~~ 
+
+1) 填充只会放置于 div 的顶部和/或底部。此 div 中的元素侧边会有填充。这样，您可以避免使用任何“方框模型数学”。请注意，如果向 div 自身添加任何侧边填充或边框，这些侧边填充或边框将与您定义的宽度相加，得出 *总计* 宽度。您也可以选择删除 div 中的元素的填充，并在该元素中另外放置一个没有任何宽度但具有设计所需填充的 div。
+
+*/
+.content {
+
+	padding: 10px 0;
+}
+
+/* ~~ 其它浮动/清除类 ~~ */
+.fltrt {  /* 此类可用于在页面中使元素向右浮动。浮动元素必须位于其在页面上的相邻元素之前。 */
+	float: right;
+	margin-left: 8px;
+}
+.fltlft { /* 此类可用于在页面中使元素向左浮动。浮动元素必须位于其在页面上的相邻元素之前。 */
+	float: left;
+	margin-right: 8px;
+}
+.clearfloat { /* 如果从 .container 中删除了 overflow:hidden，则可以将此类放置在 <br /> 或空 div 中，作为 #container 内最后一个浮动 div 之后的最终元素 */
+	clear:both;
+	height:0;
+	font-size: 1px;
+	line-height: 0px;
+}
+
+
+/**=========下面的为toggle按钮的布局============**/
+.button{
+	font:bold small "Helvetica Neue",Arial,Helvetica,Geneva,sans-serif;
+	text-transform:uppercase;
+	padding-right:3px;
+	position:relative;
+	top:-0.5ex;
+	padding-left:3px;
+	cursor:pointer;
+	border:1px #ddd solid;
+	color:#666;
+	border-radius:.55ex;
+}
+.button:hover{
+	-webkit-box-shadow:0 0 5px black;
+	-moz-box-shadow:0 0 5px black;
+	-opera-box-shadow:0 0 5px black;
+	box-shadow:0 0 5px black;
+}
+.button:active{
+	-webkit-box-shadow:0 0 20px #000;
+	-moz-box-shadow:0 0 20px #000;
+	-opera-box-shadow:0 0 20px #000;
+	box-shadow:0 0 20px #000;
+}
+.button.contenttoggle{
+	font:bold small "Courier New",Courier,mono;
+	margin-right:5px;
+}
+
+.sectionheader{
+	margin-top: 0;
+	margin-bottom: 3px;
+	margin-left: 10px;	/*控制蛋白id的左边margin间隔*/
+	border-bottom: 0 solid black;
+	font: bold x-large "Helvetica Neue",Arial,Helvetica,Geneva,sans-serif;
+	text-transform: none;
+	color: #749899;
+}
+.sectionbody	/*body前后内左右内填充各为25px*/
+{
+	margin-left: 25px;
+	margin-right: 25px;
+}
+.sequence,.scale{	/*为蛋白序列专门设置Courier New字符，因为此字体为等间距字体*/
+	margin:0;
+	margin-bottom:1px;	/*这个是设置序列行与行之前的间隔*/
+	font-family:Courier New,Georgia,"Times New Roman",Times,serif;
+}
+.scale{
+	color: #390;
+	font-style: normal;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+span.wild { /*鉴定到的wild氨基酸位点*/
+	background-color: #e0eff6;
+	color: #0773ba;
+	/*padding-right: 1ex; 
+	padding-left: 1ex;*/
+	padding-top: .1ex;
+	padding-bottom: .1ex;
+	border-radius: 1ex;
+	cursor: pointer;
+	text-decoration: none;/*underline*/
+}
+span.imut { /*鉴定到的突变位点*/
+	background-color: #FF9900;
+	color: #990000;
+	/*padding-right: 1ex; 
+	padding-left: 1ex;*/
+	padding-top: 0.1ex;
+	padding-bottom: 0.1ex;
+	border-radius: 1ex;
+	cursor: pointer;
+	text-decoration: none;/*underline*/
+}
+span.umut { /*未鉴定到的突变位点*/
+	background-color: #CCC;
+	color: #000;
+	/*padding-right: 1ex; 
+	padding-left: 1ex;*/
+	padding-top: 0.1ex;
+	padding-bottom: 0.1ex;
+	border-radius: 1ex;
+	cursor: pointer;
+	text-decoration: none;/*underline*/
+}
+li.header
+{
+	padding-left:15px;
+	list-style: inside;
+	list-style-type: none;
+	font: small "Helvetica Neue",Arial,Helvetica,Geneva,sans-serif;
+}
+div.panel	/*突变详细信息面板*/
+{
+margin:5px;
+padding-left:10px;
+text-align:left;
+background:#FFD;	/*面板底色为浅米黄色*/
+border:solid 1px #c3c3c3;
+height:auto;
+display:none;
+border-radius: 2ex;
+}
+div.panel > ul >li { 
+	list-style: inside; /*项目符号（即小圆点或数字）放置在文本以内，默认为outside的，这样就会越界*/
+	font-size:small;
+	margin:0;
+	padding:0;
+}
+.panelheader{
+	margin-top: 0;
+	margin-bottom: 0px;
+	margin-left: 10px;	/*控制蛋白id的左边margin间隔*/
+	border-bottom: 0 solid black;
+	font: bold large "Helvetica Neue",Arial,Helvetica,Geneva,sans-serif;
+	text-transform: none;
+	color: #749899;
+}
+/**=========下面的为table的布局============**/
+#table-design {
+	margin:5px;
+	width: auto;	/*设置表的宽度为自动，如果设了固定宽度如100%则有可能越界*/
+	border-top:1px solid #000;
+	border-collapse: collapse;	/*去掉行内不同单元格之间的间隙，形成单线表*/
+}
+#table-design tbody {
+	/* Kind of irrelevant unless your .css is alreadt doing something else */
+	margin: 0;
+	padding: 0;
+	outline: 0;
+	font-size: small;
+	vertical-align: baseline;
+	background: transparent;
+}
+#table-design thead {
+	text-align: left;
+}
+#table-design thead th {
+	background: #DCB5FF;
+	color: #444;
+	font-size: small;
+	font-weight: bold;
+	padding: 3px 5px;
+	border-top:1px solid #000;/*设置三线表的第一线*/
+	border-bottom:1px solid #000;/*设置三线表的第二线*/
+	word-break: break-all;  /*如果tr内字符超出宽度，自动换行*/
+}
+#table-design td {
+	padding: 3px 5px;
+	word-break: break-all;	/*如果td内字符超出宽度，自动换行*/
+
+}
+#table-design tr:nth-child(odd) {	/*匹配奇数栏*/
+	background: #FFF;
+	
+}
+#table-design tr:nth-child(even) {  /*匹配偶数栏*/
+	background: #F0F0F0;
+}
+#table-design tr:nth-last-child(1) {  /*匹配最后一栏*/
+	border-bottom:1px solid #000;    /*设置三线表的第一线*/
+}
+/**=========谱图大气泡的布局============**/
+.qtip img{
+	float:left;
+}
+.qtip {
+	width:auto;
+	float:left;
+	border-radius:5px;
+	background-color:#FFF;
+	box-shadow:3px 1px 6px #303030;
+	vertical-align:top;
+}
+.qtip .qtip-content{
+	color:#3C322D;
+	font:bold 12px/16px Arial, Helvetica, sans-serif;
+	float:left;
+	min-width:100%;
+}
+
+.ui-tooltip, .qtip{ /*气泡提示窗属性重置，主要是min-width需要重置，不然空白太多*/
+	max-width: 960px; /* 此值默认为280px,如果不改对于大图将显示不全 */
+	min-width: 2px; /* 此值默认为50px,如果不改对于小数据将显示过宽  */
+}
+/*
+.qtip-default .qtip-titlebar{	
+	background-color: #FFEF93; //背景颜色默认为黄色。
+}
+*/
+.qtip-titlebar{
+	padding: 3px 3px 3px 3px;  /*jquery.qtip.css中此值为5px 35px 5px 10px，这里重载全为3，否则四周空格不等，这部分调试了4个多小时。。。*/
+}
+
+/**========go top按钮的css布局============**/
+.top_btn{
+	position:fixed;
+	right:15px;
+	bottom:25px;
+	width:18px;
+	height:68px;
+	background:url(../images/sequence.png) no-repeat -195px -32px;
+	cursor:pointer;
+	}		
+.top_btn_hv{
+	background:url(../images/sequence.png) no-repeat -214px -32px;
+	}
+* html .top_btn{
+	position:absolute;
+	left:expression(eval(document.documentElement.scrollLeft+document.documentElement.clientWidth-this.offsetWidth)-(parseInt(this.currentStyle.marginLeft,10)||0)-(parseInt(this.currentStyle.marginRight,10)||0)-15);
+	top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0))-25);
+	}
+
+/*
+ 基础统计table的设置
+*/
+.stat
+{
+	font: 80% "Helvetica Neue",Arial,Helvetica,Geneva,sans-serif;
+	margin-left:5px;
+	width:auto;
+	border:2px solid #c3c3c3;
+}
+.stat th
+{
+	padding-left:10px;
+	padding-right:10px;
+	background:#609ce0;
+}
+.stat td
+{
+	padding-left:10px;
+	padding-right:10px;
+	background:#9c9;
+}
+
