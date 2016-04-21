@@ -1,18 +1,32 @@
+# https://stackoverflow.com/questions/34030087/how-to-find-correct-executable-with-sys-which-on-windows
+Sys.which2 <- function(cmd) {
+    stopifnot(length(cmd) == 1)
+    if (.Platform$OS.type == "windows") {
+        suppressWarnings({
+            pathname <- shell(sprintf("where %s 2> NUL", cmd), intern=TRUE)[1]
+        })
+        if (!is.na(pathname)) return(dQuote(setNames(pathname, cmd)))
+    }
+    Sys.which(cmd)
+}
+
+.java.executable <- function() Sys.which2('java')
+
 #' @title dbCreator
 #' @description An integrated function to generate variation-associated
 #' database based on sample-specific NGS data or public SNV data.
 #' @param vcf Input VCF file name. This file contains the information of gene
 #' sequence variations.
-#' @param annotation  Input annotation file name. 
+#' @param annotation  Input annotation file name.
 #' It contains the gene annotation information and can be downloaded from UCSC
 #' Genome Browser.Currently it supports RefSeq genes and ENSEMBL genes
 #' annotation file.
 #' @param refseq Input mRNA sequences file with FASTA format. It can be
 #' downloaded from UCSC Genome Browser.
-#' @param outdir Output directory. 
+#' @param outdir Output directory.
 #' @param prefix The prefix of output file.
 #' @param xmx The maximum Java heap size. The unit is "G".
-#' @param xref Optional external cross-reference file,generally it's downloaded 
+#' @param xref Optional external cross-reference file,generally it's downloaded
 #' through BioMart.If this file is provided,the final html report will present
 #' some relevant protein id or description.
 #' @return A vector containing two file names. One is a FASTA format file
@@ -43,22 +57,22 @@ dbCreator=function(vcf=NULL, annotation=NULL, refseq=NULL,
 
     if(is.null(xmx))
     {
-        ph<-paste("java","-jar",collapse=" ",sep=" ")
+        ph<-paste(.java.executable(),"-jar",collapse=" ",sep=" ")
     }
     else
     {
-        ph<-paste("java",paste("-Xmx",xmx,"G",sep=""),
+        ph<-paste(.java.executable(),paste("-Xmx",xmx,"G",sep=""),
                 "-jar",collapse=" ",sep=" ")
     }
     run_savdbcreate<-paste(ph,
                             paste("\"",
                                 paste(system.file("savdbcreate.v1.2.jar",
                                     package="sapFinder"),sep="",collapse=""),
-                                "\"",sep=""), 
-                            paste("\"",vcf,"\"",sep=""), 
-                            paste("\"",annotation,"\"",sep=""), 
-                            paste("\"",refseq,"\"",sep=""), 
-                            "1",  #tryspin 
+                                "\"",sep=""),
+                            paste("\"",vcf,"\"",sep=""),
+                            paste("\"",annotation,"\"",sep=""),
+                            paste("\"",refseq,"\"",sep=""),
+                            "1",  #tryspin
                             paste("\"",outFileWithDir,"\"",sep=""),
                             paste("\"",xref,"\"",sep=""),
                             collapse=" ",sep=" ");
@@ -69,15 +83,15 @@ dbCreator=function(vcf=NULL, annotation=NULL, refseq=NULL,
 }
 
 #' @title parserGear
-#' @description This function is mainly for q-value calculation, 
+#' @description This function is mainly for q-value calculation,
 #' protein inference and variant peptides spectra annotation.
-#' @param file MS/MS search file. Currently, only XML format file 
-#' of X!Tandem and DAT result of Mascot are supported. 
-#' @param db A FASTA format database file used for MS/MS searching. 
+#' @param file MS/MS search file. Currently, only XML format file
+#' of X!Tandem and DAT result of Mascot are supported.
+#' @param db A FASTA format database file used for MS/MS searching.
 #' Usually, it is from the output of the function \code{dbCreator}.
-#' @param outdir Output directory. 
+#' @param outdir Output directory.
 #' @param prefix The prefix of output file.
-#' @param mutPrefix The prefix of variant peptides ID. Default is "VAR". 
+#' @param mutPrefix The prefix of variant peptides ID. Default is "VAR".
 #' "VAR" is the prefix which used by function \code{dbCreator}.
 #' @param decoyPrefix The prefix of decoy sequences ID. Default is "###REV###".
 #' "###REV###" is the prefix which used by function \code{dbCreator}.
@@ -104,40 +118,40 @@ dbCreator=function(vcf=NULL, annotation=NULL, refseq=NULL,
 #' db.files <- dbCreator(vcf=vcf, annotation=annotation,
 #'                 refseq=refseq, outdir=outdir,
 #'                 prefix=prefix,xref=xref)
-#' 
+#'
 #' ## Step 2. MS/MS searching
 #' mgf.path   <- system.file("extdata/sapFinder_test.mgf",
 #'                             package="sapFinder")
 #' fasta.path <- db.files[1]
 #' xml.path   <- runTandem(spectra=mgf.path, fasta=fasta.path, outdir=".",
 #'                         tol=10, tolu="ppm", itol=0.1, itolu="Daltons")
-#' 
+#'
 #' ## Step 3. Post-processing
-#' parserGear(file=xml.path, db=fasta.path, prefix=prefix, 
+#' parserGear(file=xml.path, db=fasta.path, prefix=prefix,
 #'             outdir="parser_outdir", alignment=1)
 parserGear=function(file=NULL,db=NULL,outdir="parser_outdir",
                     prefix="sapFinder_test",
                     mutPrefix="VAR",decoyPrefix="###REV###",
                     alignment=1,xmx=NULL,thread=1)
 {
-    
+
     regx=regexpr("xml$",file,perl=TRUE);
     regd=regexpr("dat$",file,perl=TRUE);
     if(is.null(xmx))
     {
         if(regx[1]!=-1)
         {
-            ph<-paste("java","-jar",
+            ph<-paste(.java.executable(),"-jar",
                     paste("\"",
                         paste(system.file("parser4sapFinder.jar",
                             package="sapFinder"),sep="",collapse=""),
-                    "\"",sep=""),  
+                    "\"",sep=""),
                 collapse=" ",sep=" ")
             alignment=1;
         }
         else if(regd!=-1)
         {
-            ph<-paste("java","-cp",
+            ph<-paste(.java.executable(),"-cp",
                     paste("\"",
                         paste(system.file("parser4sapFinder.jar",
                             package="sapFinder"),sep="",collapse=""),
@@ -151,17 +165,17 @@ parserGear=function(file=NULL,db=NULL,outdir="parser_outdir",
     {
         if(regx[1]!=-1)
         {
-            ph<-paste("java",paste("-Xmx",xmx,"G",sep=""),"-jar",
+            ph<-paste(.java.executable(),paste("-Xmx",xmx,"G",sep=""),"-jar",
                     paste("\"",
                         paste(system.file("parser4sapFinder.jar",
                             package="sapFinder"),sep="",collapse=""),
-                    "\"",sep=""), 
+                    "\"",sep=""),
                 collapse=" ",sep=" ");
             alignment=1;
         }
         if(regd[1]!=-1)
         {
-            ph<-paste("java",paste("-Xmx",xmx,"G",sep=""),"-cp",
+            ph<-paste(.java.executable(),paste("-Xmx",xmx,"G",sep=""),"-cp",
                     paste("\"",
                         paste(system.file("parser4sapFinder.jar",
                             package="sapFinder"),sep="",collapse=""),
@@ -171,12 +185,12 @@ parserGear=function(file=NULL,db=NULL,outdir="parser_outdir",
             alignment=0;
         }
     }
-    
+
     tandemparser=paste(ph,
-                        paste("\"",file,"\"",sep=""), 
-                        paste("\"",db,"\"",sep=""), 
-                        paste("\"",prefix,"\"",sep=""), 
-                        paste("\"",outdir,"\"",sep=""), 
+                        paste("\"",file,"\"",sep=""),
+                        paste("\"",db,"\"",sep=""),
+                        paste("\"",prefix,"\"",sep=""),
+                        paste("\"",outdir,"\"",sep=""),
                         paste('"',decoyPrefix,'"',sep=""),
                         paste('"',mutPrefix,'"',sep=""),
                         alignment,
@@ -189,14 +203,14 @@ parserGear=function(file=NULL,db=NULL,outdir="parser_outdir",
 #' @title reportCreator
 #' @description This function is used for HTML-based report writing
 #' @param indir The directory of output files of function \code{parserGear}.
-#' @param outdir Output directory for this report 
-#' @param db A FASTA format database file used for MS/MS searching. 
+#' @param outdir Output directory for this report
+#' @param db A FASTA format database file used for MS/MS searching.
 #' Usually, it is from the output of the function \code{dbCreator}.
-#' @param prefix It must be set the same with the parameter of "prefix" in 
+#' @param prefix It must be set the same with the parameter of "prefix" in
 #' function \code{parserGear}.
-#' @param varInfor It is a tab-delimited file contains detailed variation 
+#' @param varInfor It is a tab-delimited file contains detailed variation
 #' information and is from the output of the function \code{dbCreator}.
-#' @export 
+#' @export
 #' @examples
 #' ## Step 1. Variation-associated database construction
 #' vcf        <- system.file("extdata/sapFinder_test.vcf",
@@ -212,20 +226,20 @@ parserGear=function(file=NULL,db=NULL,outdir="parser_outdir",
 #' db.files <- dbCreator(vcf=vcf, annotation=annotation,
 #'                 refseq=refseq, outdir=outdir,
 #'                 prefix=prefix,xref=xref)
-#' 
+#'
 #' ## Step 2. MS/MS searching
 #' mgf.path   <- system.file("extdata/sapFinder_test.mgf",
 #'                             package="sapFinder")
 #' fasta.path <- db.files[1]
 #' xml.path   <- runTandem(spectra=mgf.path, fasta=fasta.path, outdir=".",
 #'                         tol=10, tolu="ppm", itol=0.1, itolu="Daltons")
-#' 
+#'
 #' ## Step 3. Post-processing
-#' parserGear(file=xml.path, db=fasta.path, prefix=prefix, 
+#' parserGear(file=xml.path, db=fasta.path, prefix=prefix,
 #'             outdir="parser_outdir")
-#' 
+#'
 #' ## Step 4. HTML-based report generation
-#' reportCreator(indir="parser_outdir", outdir="report", db=fasta.path, 
+#' reportCreator(indir="parser_outdir", outdir="report", db=fasta.path,
 #'             prefix=prefix, varInfor=db.files[2])
 reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
                     prefix=NULL, varInfor=NULL){
@@ -234,22 +248,22 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
     indir <- normalizePath(indir)
     pep.summary.path <- paste(indir, "/", prefix,"-peptideSummary.txt", sep="")
     pro.summary.path <- paste(indir, "/", prefix,"-proteinSummary.txt", sep="")
-    
+
     ## check whether the file is empty
     con <- file(pep.summary.path,"r")
     twoline <- readLines(con,n=2)
     close(con)
-    
+
     if(is.na(twoline[2])){
         stop("the peptideSummary is null!\n")
     }
-    
+
     if(!file.exists(outdir)){
         dir.create(outdir)
     }
-    
+
     #setwd(outdir)
-    
+
     page_dir=paste(outdir,.PAGE.DIR,sep="/");
     if(!file.exists(page_dir)){
         dir.create(page_dir);
@@ -258,13 +272,13 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
         jsdir  <- paste(system.file(package="sapFinder"), "js", sep="/")
         file.copy(c(cssdir,imdir,jsdir),page_dir,recursive = TRUE);
     }
-    
+
     data_dir=paste(outdir,.DATA.DIR,sep="/");
     if(!file.exists(data_dir)){
         dir.create(data_dir)
         file.copy(c(pep.summary.path, pro.summary.path), data_dir)
     }
-    
+
     cat("    Step 1: Reading the Info.\n");
     dobj<-.dataHandle_R(pep.summary.path, varInfor, db);
     gc()  # call garbage collection
@@ -284,7 +298,7 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
     .rghtml(data=dobj,outdir=outdir);
     .rhhtml(outdir);
     wmlist<-.rchtml(data=dobj,wmlist=wmlist,outdir=outdir);
-    .rshtml(data=dobj, pep.summary.path=pep.summary.path, 
+    .rshtml(data=dobj, pep.summary.path=pep.summary.path,
             pro.summary.path=pro.summary.path,
             wmlist=wmlist,outdir=outdir);
 }
@@ -295,17 +309,17 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
 #' MS/MS searching, post-processing and HTML-based report generation.
 #' @param vcf Input VCF file name. This file contains the information of
 #' gene sequence variations.
-#' @param annotation  Input annotation file name. 
+#' @param annotation  Input annotation file name.
 #' It contains the gene annotation information and can be downloaded from
 #' UCSC Genome Browser.
 #' Currently it supports RefSeq genes and ENSEMBL genes annotation file.
 #' @param refseq Input mRNA sequences file with FASTA format. It can be
 #' downloaded from UCSC Genome Browser.
-#' @param outdir Output directory. 
+#' @param outdir Output directory.
 #' @param prefix The prefix of output file.
 #' @param spectra MS/MS peak list file
 #' @param cpu The number of CPU used for X!Tandem search. Default is 1.
-#' @param enzyme Specification of specific protein cleavage sites. 
+#' @param enzyme Specification of specific protein cleavage sites.
 #' Default is "[KR]|[X]".
 #' @param varmod Specificiation of potential modifications of residues.
 #' @param fixmod Specification of modifications of residues.
@@ -320,7 +334,7 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
 #' @param alignment 0 or 1 to determine if peptide should be alignment or not.
 #' Default is 0.
 #' @param xmx The maximum Java heap size. The unit is "G".
-#' @param xref Optional external cross-reference file,generally it's downloaded 
+#' @param xref Optional external cross-reference file,generally it's downloaded
 #' through BioMart.If this file is provided,the final html report will present
 #' some relevant protein id or description.
 #' @param ... Additional arguments
@@ -339,7 +353,7 @@ reportCreator=function(indir=".", outdir=.REPORT.DIR, db=NULL,
 #' easyRun(vcf=vcf,annotation=annotation,refseq=refseq,outdir="test",
 #' prefix="sapFinder_test",spectra=mgf.path,cpu=0,tol=10, tolu="ppm", itol=0.1,
 #' itolu="Daltons",alignment=1,xref=xref)
-easyRun=function(vcf=NULL, annotation=NULL, refseq=NULL, outdir="./", 
+easyRun=function(vcf=NULL, annotation=NULL, refseq=NULL, outdir="./",
                 prefix="sapFinder_test",spectra="",cpu=1, enzyme="[KR]|[X]",
                 tol=10,tolu="ppm",itol=0.6,itolu="Daltons",
                 varmod=NULL,fixmod=NULL,miss=2,maxCharge=8,ti=FALSE,
@@ -350,40 +364,40 @@ easyRun=function(vcf=NULL, annotation=NULL, refseq=NULL, outdir="./",
     cat("Stage 1. Variation-associated database construction.\n")
     db.files   <- dbCreator(vcf, annotation, refseq, outdir=outdir,
                             prefix=prefix, xmx=xmx, xref=xref)
-    
+
     ## Stage 2. MS/MS searching
     cat("Stage 2. MS/MS searching.\n")
     xml.path   <- runTandem(spectra=spectra, fasta=db.files[1], outdir=outdir,
                             varmod=varmod, fixmod=fixmod, maxCharge=maxCharge,
                             enzyme=enzyme, cpu=cpu, ti=ti,tol=tol,
                             tolu=tolu, itol=itol, itolu=itolu,miss=miss)
-    
+
     xml.path<-basename(xml.path)
     fasta.path<-basename(db.files[1])
     mapfile.path<-basename(db.files[2])
     ## Step 3. Post-processing
     cat("Stage 3. Post-processing.\n")
     parser_outdir=paste(outdir,"parser_outdir",sep="/")
-    parserGear(file=paste(outdir,xml.path,sep="/"), 
-            db=paste(outdir,fasta.path,sep="/"), prefix=prefix, 
+    parserGear(file=paste(outdir,xml.path,sep="/"),
+            db=paste(outdir,fasta.path,sep="/"), prefix=prefix,
             outdir=parser_outdir, alignment=alignment, xmx=xmx)
-    
+
     ## Step 4. HTML-based report generation
     cat("Stage 4. HTML-based report generation.\n")
     report_dir=paste(outdir,"report",sep="/");
-    reportCreator(indir=parser_outdir,outdir=report_dir, 
-            db=paste(outdir,fasta.path,sep="/"), 
+    reportCreator(indir=parser_outdir,outdir=report_dir,
+            db=paste(outdir,fasta.path,sep="/"),
             prefix=prefix, varInfor=paste(outdir,mapfile.path,sep="/"))
 }
 
 
 
 # @title .dataHandle_R
-# @description Prepare information for HTML-based report generation. 
+# @description Prepare information for HTML-based report generation.
 # It is called inside of function \code{reportCreator}.
-# @param file The peptide summary file from \code{parserGear}, 
+# @param file The peptide summary file from \code{parserGear},
 # such as sapr-peptideSummary.txt.
-# @param db A FASTA format database file used for MS/MS searching. 
+# @param db A FASTA format database file used for MS/MS searching.
 # Usually, it is from the output of the function \code{dbCreator}.
 # @param varInfor It is a tab-delimited file contains detailed variation
 # information and is from the output of the function \code{dbCreator}.

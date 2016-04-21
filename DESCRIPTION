@@ -2,7 +2,7 @@ Package: sapFinder
 Type: Package
 Title: A package for variant peptides detection and visualization
     in shotgun proteomics.
-Version: 1.9.0
+Version: 1.9.1
 Date: 2014-11-21
 Author: Shaohang Xu, Bo Wen
 Maintainer: Shaohang Xu <xsh.skye@gmail.com>, Bo Wen <wenbo@genomics.cn>
