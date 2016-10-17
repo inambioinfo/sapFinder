@@ -1,0 +1,17 @@
+citEntry(entry="article",
+        title = paste("sapFinder: an R/Bioconductor package for detection 
+		of variant peptides in shotgun proteomics experiments" ),
+        author = personList( as.person("Bo Wen"),
+                              as.person("Shaohang Xu"),
+							  as.person("Siqi Liu")),
+        year = 2014,
+        journal = "Bioinformatics",
+        volume = "30",
+        pages = "3136-3138",
+        doi = "10.1093/bioinformatics/btu397",
+        url = "http://bioinformatics.oxfordjournals.org/content/30/21/3136",         
+        textVersion = 
+        paste("Bo Wen, Shaohang Xu, Siqi Liu", 
+               "\"sapFinder: an R/Bioconductor package for detection",
+               "of variant peptides in shotgun proteomics experiments\".", 
+               "Bioinformatics (2014) 30 (21):3136-3138."))
